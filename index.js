@@ -1,13 +1,11 @@
 const crypto = require('crypto')
 const express = require('express')
-const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const { format } = require('path')
 const app = express()
 const port = 3000
 
 app.use(express.urlencoded({extended: true}));
-app.use(session({secret: 'sessionId'}));
 app.use(express.json());
 app.use(cookieParser());
 app.set('view engine', 'ejs');
@@ -49,8 +47,6 @@ const images = [
 ]
 
 
-
-
 app.get('/admin', (req, res) => {
   res.render('admin');
 })
@@ -75,7 +71,7 @@ app.post('/login', (req, res) => {
 })
 
 app.get('/fotki', (req, res) => {
-  console.log(sessions[req.cookies.session_id]);
+  // console.log(sessions[req.cookies.session_id]);
   if(sessions[req.cookies.session_id] !== undefined) {
     const privatePhotos = images.filter(image => image.author === sessions[req.body.id]);
     const publicPhotos = images.filter(image => image.private === false);
@@ -86,6 +82,10 @@ app.get('/fotki', (req, res) => {
     const publicPhotos = images.filter(image => image.private === false);
     res.status(200).send(publicPhotos);
   }
+})
+
+app.get('/username', (req, res) => {
+  res.send(`username: ${sessions[req.cookies.session_id]}`);
 })
 
 app.listen(port, () => {
