@@ -6,17 +6,30 @@ const app = express()
 const port = 3000
 
 app.use(express.urlencoded({extended: true}));
+app.use(express.static('public'))
 app.use(express.json());
 app.use(cookieParser());
 app.set('view engine', 'ejs');
 
 const users = {
-  admin: 'blabla' ,
-  goska: '123',
-  adam: '456'
+  admin: {
+    password: 'blabla',
+    firstName: 'John',
+    access: {superUser: true}
+  },
+  goska: {
+    password: '123',
+    firstName: 'Goska'
+  },
+  adam: {
+    password: '456',
+    firstName: 'Adam'
+  }
 }
 
-const sessions = {};
+const sessions = {
+  // '204b61d3-f92e-47b4-b6dd-767057dad700': 'admin'
+};
 
 const images = [
   {
@@ -35,6 +48,11 @@ const images = [
     private: true
   },
   {
+    name: 'image785.jpg',
+    author: 'goska',
+    private: false
+  },
+  {
     name: 'image456.jpg',
     author: 'adam',
     private: true
@@ -43,7 +61,7 @@ const images = [
     name: 'image567.jpg',
     author: 'admin',
     private: true
-  }
+  },
 ]
 
 
@@ -55,38 +73,59 @@ app.get('/sessions', (req, res) => {
   res.send(sessions)
 })
 
-app.get('/login', (req, res) => {
-  res.render('login');
+app.get('/', (req, res) => {
+  res.render('index');
 })
 
 app.post('/login', (req, res) => {
-  if(users[req.body.userName] === req.body.password) {
-    const id = crypto.randomUUID();
-    sessions[id] = req.body.userName;
-    res.cookie('session_id', id);
-    res.status(201).redirect('/fotki');
+  const userId = req.body?.userId;
+  const password = req.body?.password;
+  if(!userId || !password) {
+    res.status(400).json({"message": "invalid syntax"});
+    return;
+  }
+  if(users[userId].password === password) {
+    const sessionId = crypto.randomUUID();
+    sessions[sessionId] = userId;
+    res.cookie('session_id', sessionId);
+    res.status(201).json({"message": "User logged in"});
   } else {
-    res.status(401).send({"message": "Invalid credentials"})
+    res.status(401).json({"message": "Invalid credentials"})
   }
 })
 
 app.get('/fotki', (req, res) => {
   // console.log(sessions[req.cookies.session_id]);
-  if(sessions[req.cookies.session_id] !== undefined) {
-    const privatePhotos = images.filter(image => image.author === sessions[req.body.id]);
-    const publicPhotos = images.filter(image => image.private === false);
-    const allPhotos = [...publicPhotos, ...privatePhotos];
-    const filteredPhotos = [...new Set(allPhotos)];
-    res.status(200).send(filteredPhotos);
-  } else {
+  const sessionId = req.cookies?.session_id;
+  const userId = sessions[sessionId];
+  if(!userId) {
     const publicPhotos = images.filter(image => image.private === false);
     res.status(200).send(publicPhotos);
+  } else {
+    const allUserPhotos = images.filter(image => image.author === userId);
+    const allPublicPhotos = images.filter(image => image.private === false);
+    const allPhotos = [...allPublicPhotos, ...allUserPhotos];
+    const filteredPhotos = [...new Set(allPhotos)];
+    res.status(200).send(filteredPhotos);
   }
 })
 
-app.get('/username', (req, res) => {
-  res.send(`username: ${sessions[req.cookies.session_id]}`);
+app.get('/user', getUsername, (req, res) => {
+  console.log(req.user);
+  if(!req.user) {
+    res.status(401).json({"message": "User not logged in"})
+    return;
+  }     
+  res.json(req.user);
 })
+
+function getUsername(req, res, next) {
+  const sessionId = req.cookies?.session_id;
+  const userId = sessions[sessionId] ?? undefined;
+  const user = users[userId];
+  req.user = user;
+  next();
+}
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
