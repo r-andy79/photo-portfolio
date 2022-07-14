@@ -5,7 +5,7 @@ const { format } = require('path')
 const app = express()
 const port = 3000
 
-app.use(express.urlencoded({extended: true}));
+// app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'))
 app.use(express.json());
 app.use(cookieParser());
@@ -28,7 +28,7 @@ const users = {
 }
 
 const sessions = {
-  // '204b61d3-f92e-47b4-b6dd-767057dad700': 'admin'
+  '204b61d3-f92e-47b4-b6dd-767057dad700': 'admin'
 };
 
 const images = [
@@ -77,7 +77,8 @@ app.get('/', (req, res) => {
   res.render('index');
 })
 
-app.post('/login', (req, res) => {
+app.post('/', (req, res) => {
+  console.log(req.body);
   const userId = req.body?.userId;
   const password = req.body?.password;
   if(!userId || !password) {
@@ -95,7 +96,6 @@ app.post('/login', (req, res) => {
 })
 
 app.get('/fotki', (req, res) => {
-  // console.log(sessions[req.cookies.session_id]);
   const sessionId = req.cookies?.session_id;
   const userId = sessions[sessionId];
   if(!userId) {
