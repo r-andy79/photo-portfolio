@@ -64,9 +64,15 @@ const images = [
   },
 ]
 
-
-app.get('/admin', (req, res) => {
-  res.send('ok');
+app.get('/logout', (req, res) => {
+  const sessionId = req.cookies?.session_id;
+  console.log(req.cookies, sessions);
+  if(!sessionId) {
+    res.json({"message": "You're not logged in"})
+    return
+  }
+  delete sessions[sessionId];
+  res.clearCookie('session_id', sessionId).json({"message": "You have been logged out"});
 })
 
 app.get('/sessions', (req, res) => {
