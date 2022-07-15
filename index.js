@@ -28,7 +28,7 @@ const users = {
 }
 
 const sessions = {
-  '204b61d3-f92e-47b4-b6dd-767057dad700': 'admin'
+  // '204b61d3-f92e-47b4-b6dd-767057dad700': 'admin'
 };
 
 const images = [
@@ -66,7 +66,7 @@ const images = [
 
 
 app.get('/admin', (req, res) => {
-  res.render('admin');
+  res.send('ok');
 })
 
 app.get('/sessions', (req, res) => {
