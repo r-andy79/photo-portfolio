@@ -13,15 +13,18 @@ const users = {
   admin: {
     password: 'blabla',
     firstName: 'John',
-    access: {superUser: true}
+    access: {superUser: true},
+    userId: 'admin'
   },
   goska: {
     password: '123',
-    firstName: 'Goska'
+    firstName: 'Goska',
+    userId: 'goska'
   },
   adam: {
     password: '456',
-    firstName: 'Adam'
+    firstName: 'Adam',
+    userId: 'adam'
   }
 }
 
@@ -87,7 +90,7 @@ app.post('/login', (req, res) => {
     res.status(400).json({"message": "invalid syntax"});
     return;
   }
-  if(users[userId].password === password) {
+  if(users[userId]?.password === password) {
     const sessionId = crypto.randomUUID();
     sessions[sessionId] = userId;
     res.cookie('session_id', sessionId); // poczytać
@@ -97,14 +100,12 @@ app.post('/login', (req, res) => {
   }
 })
 
-app.get('/fotki', (req, res) => {
-  const sessionId = req.cookies?.session_id;
-  const userId = sessions[sessionId];
-  if(!userId) {
+app.get('/fotki', getUsername, (req, res) => {
+  if(!req.user) {
     const publicPhotos = images.filter(image => image.private === false);
     res.status(200).send(publicPhotos);
   } else {
-    const allUserPhotos = images.filter(image => image.author === userId);
+    const allUserPhotos = images.filter(image => image.author === req.user.userId);
     const allPublicPhotos = images.filter(image => image.private === false);
     const allPhotos = [...allPublicPhotos, ...allUserPhotos];
     const filteredPhotos = [...new Set(allPhotos)];

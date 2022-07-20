@@ -1,6 +1,7 @@
 const formEl = document.querySelector('form');
-const photosContainer = document.querySelector('.photos');
-const nameEl = document.querySelector('.name');
+const photosContainer = document.querySelector('#photos');
+const nameEl = document.querySelector('#user');
+const err = document.querySelector('#error')
 
 
 
@@ -18,30 +19,33 @@ formEl.addEventListener('submit', event => {
   }
  
   loginUser(data).then(response => {
+    cleanView()
     if (response.status !== 201) {
       throw new Error('unable to log in')
     }
   })
-    .then(() => {
-      document.querySelector('#error').innerHTML = '';
-      getUser().then(user => {
-        nameEl.innerHTML = `Hello ${user.firstName}`;
-      })
-
-      getPhotos().then(photos => {
-        photos.forEach(photo => {
-          photosContainer.innerHTML += `<div>filename: ${photo.name}, author: ${photo.author}</div>`
-        })
-      })
-    })
-    .catch(err => {
-      console.dir(err)
-      if (err.message === 'unable to log in') {
-        displayErrorMessage()
-      }
-    })
+  .then(() => {
+    getUser().then(displayUser)
+    getPhotos().then(displayPhotos)
+  })
+  .catch(err => {
+    if (err.message === 'unable to log in') {
+      displayErrorMessage()
+    }
+  })
 })
 
+function displayPhotos(photos){
+  photos.forEach(photo => {
+    photosContainer.innerHTML += `<div>filename: ${photo.name}, author: ${photo.author}</div>`
+  })
+}
+function displayUser(user) {
+  nameEl.innerHTML = `Hello ${user.firstName}`;
+}
+function displayErrorMessage() {
+  err.innerHTML = 'Invalid credentials';
+}
 
 function loginUser(body) {
   return fetch('/login', body)
@@ -55,6 +59,8 @@ function getUser() {
   return fetch('/user').then(res => res.json())
 }
 
-function displayErrorMessage() {
-  photosContainer.insertAdjacentHTML('beforebegin', '<p id="error">Invalid credentials</p>')
+function cleanView() {
+  err.innerHTML = '';
+  photosContainer.innerHTML = '';
+  nameEl.innerHTML = '';
 }

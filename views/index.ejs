@@ -6,9 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
-    <p class="name"></p>
+    <p id="user"></p>
+    <p id="error"></p>
     <a href="http://localhost:3000/logout">log out</a>
-    <form action="http://localhost:3000/" method="POST">
+    <form>
       <label>Username:
         <input name="userId" type="text">
       </label>
@@ -17,7 +18,7 @@
       </label>
       <button type="submit">Login</button>
     </form>
-    <div class="photos"></div>
+    <div id="photos"></div>
     <script src="../script.js"></script>
   </body>
 </html>
