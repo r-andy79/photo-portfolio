@@ -24,14 +24,15 @@ formEl.addEventListener('submit', event => {
     }
     return response.json()
   })
-  .then(() => Promise.all([getUser('/user'), getPhotos('/fotki')]))
-  .then(res => {
-    const [user, photos] = res;
-    nameEl.innerHTML = `Hello ${user.firstName}`;
-    photos.forEach(photo => {
-      photosContainer.innerHTML += `<div>filename: ${photo.name}, author: ${photo.author}</div>`
-    })
-  })
+  // .then(() => Promise.all([getUser('/user'), getPhotos('/fotki')]))
+  .then(() => getData())
+  // .then(res => {
+  //   const [user, photos] = res;
+  //   nameEl.innerHTML = `Hello ${user.firstName}`;
+  //   photos.forEach(photo => {
+  //     photosContainer.innerHTML += `<div>filename: ${photo.name}, author: ${photo.author}</div>`
+  //   })
+  // })
   .catch(err => {
     console.dir(err)
     if(err.message === 'unable to log in') {
@@ -40,8 +41,22 @@ formEl.addEventListener('submit', event => {
   })
 })
 
+
 function loginUser(url, body) {
   return fetch(url, body)
+}
+
+async function getData() {
+  const url1 = '/user'
+  const url2 = '/fotki'
+
+  const response1 = await fetch(url1)
+  const data1 = response1.json()
+
+  const response2 = await fetch(url2)
+  const data2 = response2.json()
+
+  console.log(data1, data2)
 }
 
 function getPhotos(url) {
@@ -51,7 +66,6 @@ function getPhotos(url) {
 function getUser(url) {
   return fetch(url).then(res => res.json())
 }
-
 
 
 function displayErrorMessage() {

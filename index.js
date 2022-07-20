@@ -1,14 +1,18 @@
-const crypto = require('crypto')
-const express = require('express')
+const crypto = require('crypto');
+const express = require('express');
+const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const { format } = require('path')
-const app = express()
-const port = 3000
+const { format } = require('path');
+const app = express();
+const port = 3000;
 
 // app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'))
 app.use(express.json());
 app.use(cookieParser());
+app.use(session({
+  secret: 's3cr3t'
+}));
 app.set('view engine', 'ejs');
 
 const users = {
@@ -81,6 +85,14 @@ app.get('/sessions', (req, res) => {
 
 app.get('/', (req, res) => {
   res.render('index');
+})
+
+app.get('/foo', (req, res) => {
+  res.status(200).send('ok - foo');
+})
+
+app.get('/bar', (req, res) => {
+  res.status(200).send('ok - bar');
 })
 
 app.post('/', (req, res) => {
