@@ -1,5 +1,6 @@
 const formEl = document.querySelector('form');
 const photosContainer = document.querySelector('.photos');
+const nameEl = document.querySelector('.name');
 
 
 
@@ -16,7 +17,6 @@ formEl.addEventListener('submit', event => {
     body: JSON.stringify(body)
   }
   const user = loginUser('/', data);
-  const allData = Promise.all([getUser('/user'), getPhotos('/fotki')])
   
   user.then(response => {
     if(response.status !== 201) {
@@ -24,32 +24,20 @@ formEl.addEventListener('submit', event => {
     }
     return response.json()
   })
-  .then(data => console.log(data))
   .then(() => Promise.all([getUser('/user'), getPhotos('/fotki')]))
-  .then(res => console.log(res[0].firstName, res[1]))
-  .then(err => console.log(err))
-
-  // user.then(response => {
-  //   if(response.status !== 201) {
-  //     throw new Error('błąd');
-  //   }
-  //   return response.json()
-  // })
-  // .then(data => console.log(data))
-  // .then(() => getPhotos('/fotki'))
-  // .then(resp => resp.json())
-  // .then(data => {
-  //   data.forEach(item => {
-  //     photosContainer.innerHTML += `<div>filename: ${item.name}, author: ${item.author}</div>`
-  //   });
-  //   console.log('finished');
-  // })
-  // .catch(err => {
-  //   console.dir(err)
-  //   if(err.message === 'błąd') {
-  //     displayErrorMessage();
-  //   }
-  // })
+  .then(res => {
+    const [user, photos] = res;
+    nameEl.innerHTML = `Hello ${user.firstName}`;
+    photos.forEach(photo => {
+      photosContainer.innerHTML += `<div>filename: ${photo.name}, author: ${photo.author}</div>`
+    })
+  })
+  .catch(err => {
+    console.dir(err)
+    if(err.message === 'unable to log in') {
+      displayErrorMessage()
+    }
+  })
 })
 
 function loginUser(url, body) {
@@ -64,11 +52,8 @@ function getUser(url) {
   return fetch(url).then(res => res.json())
 }
 
-// allData.then(res => console.log(res))
 
 
 function displayErrorMessage() {
-  // const p = document.createElement('p');
-  // p.textContent = 'Invalid credentials';
   photosContainer.insertAdjacentHTML('beforebegin', '<p>Invalid credentials</p>')
 }
