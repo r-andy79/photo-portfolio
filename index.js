@@ -1,18 +1,12 @@
 const crypto = require('crypto');
 const express = require('express');
-const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const { format } = require('path');
 const app = express();
 const port = 3000;
 
-// app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'))
 app.use(express.json());
 app.use(cookieParser());
-app.use(session({
-  secret: 's3cr3t'
-}));
 app.set('view engine', 'ejs');
 
 const users = {
@@ -79,23 +73,13 @@ app.get('/logout', (req, res) => {
   res.clearCookie('session_id', sessionId).json({"message": "You have been logged out"});
 })
 
-app.get('/sessions', (req, res) => {
-  res.send(sessions)
-})
 
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
   res.render('index');
 })
 
-app.get('/foo', (req, res) => {
-  res.status(200).send('ok - foo');
-})
 
-app.get('/bar', (req, res) => {
-  res.status(200).send('ok - bar');
-})
-
-app.post('/', (req, res) => {
+app.post('/login', (req, res) => {
   console.log(req.body);
   const userId = req.body?.userId;
   const password = req.body?.password;
@@ -106,7 +90,7 @@ app.post('/', (req, res) => {
   if(users[userId].password === password) {
     const sessionId = crypto.randomUUID();
     sessions[sessionId] = userId;
-    res.cookie('session_id', sessionId);
+    res.cookie('session_id', sessionId); // poczytać
     res.status(201).json({"message": "User logged in"});
   } else {
     res.status(401).json({"message": "Invalid credentials"})
