@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
+    <nav>
+      <a href="#" onClick="onNavItemClick('/home')">home</a>
+      <a href="#" onClick="onNavItemClick('/about')">about</a>
+      <a href="#" onClick="onNavItemClick('/contact')">contact</a>
+    </nav>
+    <div id="content"></div>
     <p id="user"></p>
     <p id="error"></p>
     <a href="http://localhost:3000/logout">log out</a>
@@ -19,6 +25,8 @@
       <button type="submit">Login</button>
     </form>
     <div id="photos"></div>
+    <script src="../about.js"></script>
+    <script src="../contact.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>

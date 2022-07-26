@@ -17,25 +17,25 @@ formEl.addEventListener('submit', event => {
     },
     body: JSON.stringify(body)
   }
- 
+
   loginUser(data).then(response => {
     cleanView()
     if (response.status !== 201) {
       throw new Error('unable to log in')
     }
   })
-  .then(() => {
-    getUser().then(displayUser)
-    getPhotos().then(displayPhotos)
-  })
-  .catch(err => {
-    if (err.message === 'unable to log in') {
-      displayErrorMessage()
-    }
-  })
+    .then(() => {
+      getUser().then(displayUser)
+      getPhotos().then(displayPhotos)
+    })
+    .catch(err => {
+      if (err.message === 'unable to log in') {
+        displayErrorMessage()
+      }
+    })
 })
 
-function displayPhotos(photos){
+function displayPhotos(photos) {
   photos.forEach(photo => {
     photosContainer.innerHTML += `<div>filename: ${photo.name}, author: ${photo.author}</div>`
   })
@@ -64,3 +64,28 @@ function cleanView() {
   photosContainer.innerHTML = '';
   nameEl.innerHTML = '';
 }
+
+let contentDiv = document.getElementById('content');
+
+const routes = {
+  // '/': './views/index.ejs',
+  '/about': aboutPage,
+  '/contact': contactPage
+}
+
+window.onpopstate = () => {
+  contentDiv.innerHTML = routes[window.location.pathname];
+}
+
+console.log(window.location.pathname)
+
+let onNavItemClick = (pathName) => {
+  window.history.pushState(
+    {},
+    pathName,
+    window.location.origin + pathName
+    )
+    contentDiv.innerHTML = routes[pathName];
+  }
+  
+contentDiv.innerHTML = routes[window.location.pathname];

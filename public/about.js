@@ -1,0 +1,1 @@
+let aboutPage = `<h1>About page</h1>`
