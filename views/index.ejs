@@ -7,15 +7,17 @@
   </head>
   <body>
     <nav>
-      <a href="#" onClick="onNavItemClick('/home')">home</a>
+      <a href="#" onClick="onNavItemClick('/')">home</a>
       <a href="#" onClick="onNavItemClick('/about')">about</a>
       <a href="#" onClick="onNavItemClick('/contact')">contact</a>
+      <a href="#" onClick="onNavItemClick('/login')">login</a>
+      <a href="#" onClick="onNavItemClick('/admin')">admin</a>
     </nav>
     <div id="content"></div>
     <p id="user"></p>
     <p id="error"></p>
     <a href="http://localhost:3000/logout">log out</a>
-    <form>
+    <form style="display: none;">
       <label>Username:
         <input name="userId" type="text">
       </label>
@@ -26,7 +28,6 @@
     </form>
     <div id="photos"></div>
     <script src="../about.js"></script>
-    <script src="../contact.js"></script>
     <script src="../script.js"></script>
   </body>
 </html>

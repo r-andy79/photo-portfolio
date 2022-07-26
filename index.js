@@ -77,9 +77,7 @@ app.get('/logout', (req, res) => {
 })
 
 
-app.get('/', (_, res) => {
-  res.render('index');
-})
+
 
 
 app.post('/login', (req, res) => {
@@ -120,6 +118,11 @@ app.get('/user', getUsername, (req, res) => {
     return;
   }     
   res.json(req.user);
+})
+
+app.get('/*', (_, res) => {
+  console.log(_.path)
+  res.render('index');
 })
 
 function getUsername(req, res, next) {

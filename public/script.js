@@ -4,7 +4,6 @@ const nameEl = document.querySelector('#user');
 const err = document.querySelector('#error')
 
 
-
 formEl.addEventListener('submit', event => {
   event.preventDefault();
   const userId = document.querySelector('[name="userId"]').value;
@@ -65,27 +64,51 @@ function cleanView() {
   nameEl.innerHTML = '';
 }
 
+function renderInfo() {
+  console.log('rendertttt');
+  getUser().then(data => {
+    contentDiv.innerHTML = data.userId ?? data.message;
+  });
+}
+
+function getContact() {
+  console.log('getContact')
+  contentDiv.innerHTML = `<h1>get contact</h1>`
+}
+
+function loginPage() {
+  formEl.style.display = "block";
+}
+
+function home() {
+  contentDiv.innerHTML = 'Home';
+}
+
 let contentDiv = document.getElementById('content');
 
 const routes = {
-  // '/': './views/index.ejs',
+  '/': home,
   '/about': aboutPage,
-  '/contact': contactPage
+  '/contact': getContact,
+  '/login': loginPage,
+  '/admin': renderInfo
 }
 
-window.onpopstate = () => {
-  contentDiv.innerHTML = routes[window.location.pathname];
-}
+// window.onpopstate = () => {
+//   console.log("onpopstate")
+//   contentDiv.innerHTML = routes[window.location.pathname];
+// }
 
-console.log(window.location.pathname)
 
 let onNavItemClick = (pathName) => {
+  console.log('click')
   window.history.pushState(
     {},
     pathName,
     window.location.origin + pathName
     )
-    contentDiv.innerHTML = routes[pathName];
-  }
-  
-contentDiv.innerHTML = routes[window.location.pathname];
+  routes[pathName]();
+}
+console.log(window.location.pathname);
+console.log(routes[window.location.pathname]);
+routes[window.location.pathname]();

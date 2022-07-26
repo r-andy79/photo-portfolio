@@ -1,1 +1,3 @@
-let aboutPage = `<h1>About page</h1>`
+let aboutPage = () => {
+  contentDiv.innerHTML = `<h1>About page</h1>`
+};

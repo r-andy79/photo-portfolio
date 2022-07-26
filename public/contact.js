@@ -1,1 +1,0 @@
-let contactPage = `<h1>Contact page</h1>`
