@@ -2,6 +2,7 @@ const formEl = document.querySelector('form');
 const photosContainer = document.querySelector('#photos');
 const nameEl = document.querySelector('#user');
 const err = document.querySelector('#error')
+const linksEl = Array.from(document.querySelectorAll('nav a'));
 
 
 formEl.addEventListener('submit', event => {
@@ -81,7 +82,7 @@ function loginPage() {
 }
 
 function home() {
-  contentDiv.innerHTML = 'Home';
+  contentDiv.innerHTML = `<h1>Home</h1>`;
 }
 
 let contentDiv = document.getElementById('content');
@@ -101,7 +102,6 @@ const routes = {
 
 
 let onNavItemClick = (pathName) => {
-  console.log('click')
   window.history.pushState(
     {},
     pathName,
@@ -109,6 +109,13 @@ let onNavItemClick = (pathName) => {
     )
   routes[pathName]();
 }
+
+linksEl.forEach(el => {
+  el.addEventListener('click', e => {
+    onNavItemClick(e.target.dataset.location);
+  })
+})
+
 console.log(window.location.pathname);
 console.log(routes[window.location.pathname]);
 routes[window.location.pathname]();
