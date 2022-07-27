@@ -3,6 +3,7 @@ const photosContainer = document.querySelector('#photos');
 const nameEl = document.querySelector('#user');
 const err = document.querySelector('#error')
 const linksEl = Array.from(document.querySelectorAll('nav a'));
+const navContainer = document.querySelector('nav');
 
 
 formEl.addEventListener('submit', event => {
@@ -36,13 +37,16 @@ formEl.addEventListener('submit', event => {
 })
 
 function displayPhotos(photos) {
+  cleanView();
   photos.forEach(photo => {
     photosContainer.innerHTML += `<div>filename: ${photo.name}, author: ${photo.author}</div>`
   })
 }
+
 function displayUser(user) {
   nameEl.innerHTML = `Hello ${user.firstName}`;
 }
+
 function displayErrorMessage() {
   err.innerHTML = 'Invalid credentials';
 }
@@ -66,7 +70,6 @@ function cleanView() {
 }
 
 function renderInfo() {
-  console.log('rendertttt');
   getUser().then(data => {
     contentDiv.innerHTML = data.userId ?? data.message;
   });
@@ -83,6 +86,7 @@ function loginPage() {
 
 function home() {
   contentDiv.innerHTML = `<h1>Home</h1>`;
+  getPhotos().then(photos => displayPhotos(photos));
 }
 
 let contentDiv = document.getElementById('content');
@@ -90,16 +94,9 @@ let contentDiv = document.getElementById('content');
 const routes = {
   '/': home,
   '/about': aboutPage,
-  '/contact': getContact,
   '/login': loginPage,
   '/admin': renderInfo
 }
-
-// window.onpopstate = () => {
-//   console.log("onpopstate")
-//   contentDiv.innerHTML = routes[window.location.pathname];
-// }
-
 
 let onNavItemClick = (pathName) => {
   window.history.pushState(

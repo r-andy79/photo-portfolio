@@ -73,11 +73,8 @@ app.get('/logout', (req, res) => {
     return
   }
   delete sessions[sessionId];
-  res.clearCookie('session_id', sessionId).json({"message": "You have been logged out"});
+  res.clearCookie('session_id', sessionId).send("You have been logged out");
 })
-
-
-
 
 
 app.post('/login', (req, res) => {
