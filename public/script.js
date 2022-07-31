@@ -142,36 +142,54 @@ function adminView() {
   })
 }
 
-window.addEventListener('hashchange', e => {
-  console.log('hashchange');
-})
+function contactView() {
+  cleanView()
+  console.log('contactView');
+  photosContainer.innerHTML = `<h1>hello</h1>`
+}
+
+const route = '';
+function returnRoute(route) {
+  switch (route) {
+    case '#/admin':
+      deleteFormIfExists();
+      adminView().catch(() => {
+        pushToHistory('#/login');
+        loginView()
+      });
+      break;
+    case '#/login':
+      deleteFormIfExists();
+      loginView();
+      break;
+      case '#/contact':
+        deleteFormIfExists();
+        contactView();
+        break;
+    default:
+      deleteFormIfExists();
+      homeView();
+  }
+}
+
+function pushToHistory(path) {
+  window.history.pushState({}, "", path)
+}
 
 window.addEventListener('popstate', e => {
-  console.log(e);
+  const path = e.target.window.location.hash;
+  console.log('popstate')
+  pushToHistory(path);
+  returnRoute(path);
 })
 
 const onNavItemClick = path => {
-  window.history.pushState({}, "", path)
+  pushToHistory(path);
 }
 
 linksEl.forEach(el => {
   el.addEventListener('click', e => {
     onNavItemClick(e.target.hash);
-    if(e.target.hash === "#/login") {
-      deleteFormIfExists()
-      loginView()
-    } else if(e.target.hash === "#/") {
-      deleteFormIfExists()
-      homeView()
-    } else if(e.target.hash === "#/admin") {
-      deleteFormIfExists()
-      adminView().catch(() => {
-        window.history.pushState({}, "", '#/login');
-        loginView()
-      })
-    } else if(e.target.hash === "#/contact") {
-      deleteFormIfExists()
-      contactView()
-    }
+    returnRoute(e.target.hash)
   })
 })
