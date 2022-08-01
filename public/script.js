@@ -128,8 +128,8 @@ function homeView() {
 }
 
 function loginView() {
-  cleanView();
   console.log('login view');
+  cleanView();
   createForm()
 }
 
@@ -148,28 +148,15 @@ function contactView() {
   photosContainer.innerHTML = `<h1>hello</h1>`
 }
 
-const route = '';
-function returnRoute(route) {
-  switch (route) {
-    case '#/admin':
-      deleteFormIfExists();
-      adminView().catch(() => {
-        pushToHistory('#/login');
-        loginView()
-      });
-      break;
-    case '#/login':
-      deleteFormIfExists();
-      loginView();
-      break;
-      case '#/contact':
-        deleteFormIfExists();
-        contactView();
-        break;
-    default:
-      deleteFormIfExists();
-      homeView();
-  }
+const routes = {
+  '#/' : homeView,
+  '#/admin': adminView,
+  '#/login': loginView,
+  '#/contact': contactView
+}
+
+function returnRoute(path) {
+  return routes[path]()
 }
 
 function pushToHistory(path) {
@@ -177,8 +164,8 @@ function pushToHistory(path) {
 }
 
 window.addEventListener('popstate', e => {
+  deleteFormIfExists();
   const path = e.target.window.location.hash;
-  console.log('popstate')
   pushToHistory(path);
   returnRoute(path);
 })
@@ -189,6 +176,7 @@ const onNavItemClick = path => {
 
 linksEl.forEach(el => {
   el.addEventListener('click', e => {
+    deleteFormIfExists();
     onNavItemClick(e.target.hash);
     returnRoute(e.target.hash)
   })
