@@ -5,6 +5,8 @@ const err = document.querySelector('#error')
 const nav = document.querySelector('nav');
 const linksEl = Array.from(document.querySelectorAll('nav a'));
 
+window.addEventListener('DOMContentLoaded', homeView);
+
 
 function createForm() {
   const form = document.createElement('form');
@@ -53,6 +55,9 @@ function createForm() {
     })
     .then(() => {
       addLogout()
+      pushToHistory('#/admin')
+      cleanView()
+      adminView()
       getUser().then(displayUser)
       getPhotos().then(displayPhotos)
     })
@@ -122,7 +127,7 @@ function cleanView() {
 }
 
 function homeView() {
-  cleanView();
+  // cleanView();
   console.log('home view');
   getPhotos().then(photos => displayPhotos(photos))
 }
@@ -135,24 +140,27 @@ function loginView() {
 
 function adminView() {
   cleanView();
-  
+  deleteFormIfExists()
   return getUser().then(user => {
     displayUser(user)
     getPhotos().then(photos => displayPhotos(photos))
+  }).catch(() => {
+    pushToHistory('#/login');
+    loginView();
   })
 }
 
-function contactView() {
+function aboutView() {
   cleanView()
-  console.log('contactView');
-  photosContainer.innerHTML = `<h1>hello</h1>`
+  photosContainer.innerHTML = `<h1>About</h1>`
 }
 
 const routes = {
-  '#/' : homeView,
+  '#/': homeView,
+  '#/home' : homeView,
   '#/admin': adminView,
   '#/login': loginView,
-  '#/contact': contactView
+  '#/about': aboutView,
 }
 
 function returnRoute(path) {
@@ -171,11 +179,13 @@ window.addEventListener('popstate', e => {
 })
 
 const onNavItemClick = path => {
+  deleteFormIfExists();
   pushToHistory(path);
 }
 
 linksEl.forEach(el => {
   el.addEventListener('click', e => {
+    e.preventDefault();
     deleteFormIfExists();
     onNavItemClick(e.target.hash);
     returnRoute(e.target.hash)
