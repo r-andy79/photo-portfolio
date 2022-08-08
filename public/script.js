@@ -2,10 +2,16 @@ const formEl = document.querySelector('form');
 const photosContainer = document.querySelector('#photos');
 const nameEl = document.querySelector('#user');
 const err = document.querySelector('#error')
+const loggedOutNav = document.querySelector('.logged-out');
+const loggedinNav = document.querySelector('.logged-in');
 const nav = document.querySelector('nav');
 const linksEl = Array.from(document.querySelectorAll('nav a'));
 
-window.addEventListener('DOMContentLoaded', homeView);
+window.addEventListener('DOMContentLoaded', () => {
+  loggedinNav.style.display = 'none';
+  homeView
+  }
+);
 
 
 function createForm() {
@@ -54,9 +60,10 @@ function createForm() {
       }
     })
     .then(() => {
-      addLogout()
+      loggedinNav.style.display = 'block';
+      loggedOutNav.style.display = 'none';
       pushToHistory('#/admin')
-      cleanView()
+      // cleanView()
       adminView()
       getUser().then(displayUser)
       getPhotos().then(displayPhotos)
@@ -64,24 +71,31 @@ function createForm() {
     .catch(err => {
       if (err.message === 'unable to log in') {
         displayErrorMessage(err.message)
+        loggedinNav.display.style = 'none'
+        loggedOutNav.display.style = 'block'
       }
     })
   })
 };
 
-function addLogout() {
-  const anchor = document.createElement('a');
-  anchor.textContent = 'logout';
-  console.log(anchor);
-  nav.appendChild(anchor)
+// function addLogout() {
+//   const anchor = document.createElement('a');
+//   anchor.textContent = 'logout';
+//   console.log(anchor);
+//   nav.appendChild(anchor)
   
-  anchor.addEventListener('click', e => {
-    fetch('/logout')
-    .then(res => res.json())
-    .then(data => {
-      cleanView()
-      displayErrorMessage(data.message)
-    })
+//   anchor.addEventListener('click', e => {
+//     logout();
+//   })
+// }
+
+function logout() {
+  fetch('/logout')
+  .then(res => res.json())
+  .then(data => {
+    cleanView()
+    displayErrorMessage(data.message)
+
   })
 }
 
@@ -170,6 +184,7 @@ const routes = {
   '#/admin': adminView,
   '#/login': loginView,
   '#/about': aboutView,
+  '#/logout': logout
 }
 
 function returnRoute(path) {
