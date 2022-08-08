@@ -76,7 +76,10 @@ function addLogout() {
   nav.appendChild(anchor)
   
   anchor.addEventListener('click', e => {
-    fetch('/logout').then((data) => {
+    fetch('/logout')
+    .then(res => res.json())
+    .then(data => {
+      cleanView()
       displayErrorMessage(data.message)
     })
   })
@@ -127,7 +130,7 @@ function cleanView() {
 }
 
 function homeView() {
-  // cleanView();
+  cleanView();
   console.log('home view');
   getPhotos().then(photos => displayPhotos(photos))
 }
@@ -142,8 +145,14 @@ function adminView() {
   cleanView();
   deleteFormIfExists()
   return getUser().then(user => {
-    displayUser(user)
-    getPhotos().then(photos => displayPhotos(photos))
+    if(user.access?.superUser) {
+      displayUser(user)
+      getPhotos().then(photos => displayPhotos(photos))
+      console.log('ok')
+    } else {
+      pushToHistory('#/');
+      returnRoute('#/');
+    }
   }).catch(() => {
     pushToHistory('#/login');
     loginView();

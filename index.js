@@ -63,6 +63,12 @@ const images = [
     author: 'admin',
     private: true
   },
+  {
+    name: 'image678.jpg',
+    author: 'adam',
+    private: false,
+    route: 'jakis-tam'
+  }
 ]
 
 app.get('/logout', (req, res) => {
