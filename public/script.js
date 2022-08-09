@@ -1,17 +1,15 @@
 const formEl = document.querySelector('form');
-const photosContainer = document.querySelector('#photos');
-const nameEl = document.querySelector('#user');
-const err = document.querySelector('#error')
-const loggedOutNav = document.querySelector('.logged-out');
-const loggedinNav = document.querySelector('.logged-in');
-const nav = document.querySelector('nav');
+const photosEl = document.querySelector('#photos');
+const messageEl = document.querySelector('#message')
 const linksEl = Array.from(document.querySelectorAll('nav a'));
+const logoutLink = document.querySelector('#logout');
+const loginLink = document.querySelector('#login');
 
-window.addEventListener('DOMContentLoaded', () => {
-  loggedinNav.style.display = 'none';
-  homeView
-  }
-);
+
+// naturally, make the state slightly more persistent :)
+const state = {
+  userLoggedIn: false // gets overwritten, so make it better ;)
+}
 
 
 function createForm() {
@@ -34,14 +32,17 @@ function createForm() {
 
   labelLogin.appendChild(inputEllogin);
   labelPassword.appendChild(inputElpassword);
+  form.setAttribute('id', 'form')
   form.appendChild(labelLogin);
   form.appendChild(labelPassword)
   form.appendChild(submitEl)
-  document.body.insertBefore(form, photosContainer);
+  document.body.insertBefore(form, photosEl);
+
+
 
   form.addEventListener('submit', event => {
     event.preventDefault();
-    console.log('handler')
+    console.log('submit')
     const userId = document.querySelector('[name="userId"]').value;
     const password = document.querySelector('[name="password"]').value;
     const body = { userId, password };
@@ -52,75 +53,55 @@ function createForm() {
       },
       body: JSON.stringify(body)
     }
-  
     loginUser(data).then(response => {
-      cleanView()
       if (response.status !== 201) {
         throw new Error('unable to log in')
       }
     })
     .then(() => {
-      loggedinNav.style.display = 'block';
-      loggedOutNav.style.display = 'none';
-      pushToHistory('#/admin')
-      // cleanView()
-      adminView()
-      getUser().then(displayUser)
-      getPhotos().then(displayPhotos)
+      state.userLoggedIn = true // this is simplistic but it's a start, maybe should be a function?
+      doTheMagic('#/admin') // in the end we always do the same thing: rendering views :) (and urls)
     })
     .catch(err => {
       if (err.message === 'unable to log in') {
-        displayErrorMessage(err.message)
-        loggedinNav.display.style = 'none'
-        loggedOutNav.display.style = 'block'
+        displayMessage(err.message) // maybe this is separate view, maybe not..
       }
     })
   })
 };
 
-// function addLogout() {
-//   const anchor = document.createElement('a');
-//   anchor.textContent = 'logout';
-//   console.log(anchor);
-//   nav.appendChild(anchor)
-  
-//   anchor.addEventListener('click', e => {
-//     logout();
-//   })
-// }
-
-function logout() {
-  fetch('/logout')
-  .then(res => res.json())
-  .then(data => {
-    cleanView()
-    displayErrorMessage(data.message)
-
-  })
+// helpers helpers...
+function renderLogoutLoginMenu() {
+  if(state.userLoggedIn === true){
+    logoutLink.style.display = 'inline'
+    loginLink.style.display = 'none'
+  } else {
+    logoutLink.style.display = 'none'
+    loginLink.style.display = 'inline'
+  }
 }
-
 
 function deleteFormIfExists() {
   const form = document.querySelector('form');
-  if(form) {
-    document.body.removeChild(form);
-  }
+  form && document.body.removeChild(form);
 }
 
 function displayPhotos(photos) {
   photos.forEach(photo => {
-    photosContainer.innerHTML += `<div>filename: ${photo.name}, author: ${photo.author}</div>`
+    photosEl.innerHTML += `<div>filename: ${photo.name}, author: ${photo.author}</div>`
   })
 }
-function displayUser(user) {
-  nameEl.innerHTML = `Hello ${user.firstName}`;
-}
-function displayErrorMessage(message) {
-  err.innerHTML = message;
+
+function displayMessage(message) {
+  messageEl.innerHTML = message;
 }
 
 function loginUser(body) {
   return fetch('/login', body)
+}
+
+function logOutUser(body) {
+  return fetch('/logout', body).then(res => res.json())
 }
 
 function getPhotos() {
@@ -137,81 +118,95 @@ function getUser() {
   })
 }
 
+// at this point all of this idempotent because it never fails
 function cleanView() {
-  err.innerHTML = '';
-  photosContainer.innerHTML = '';
-  nameEl.innerHTML = '';
+  // console.log('clean view :)')
+  messageEl.innerHTML = '';
+  photosEl.innerHTML = '';
+  deleteFormIfExists() // example of idempotent, just works, always
 }
 
-function homeView() {
-  cleanView();
-  console.log('home view');
-  getPhotos().then(photos => displayPhotos(photos))
-}
-
-function loginView() {
-  console.log('login view');
-  cleanView();
-  createForm()
-}
-
-function adminView() {
-  cleanView();
-  deleteFormIfExists()
-  return getUser().then(user => {
-    if(user.access?.superUser) {
-      displayUser(user)
-      getPhotos().then(photos => displayPhotos(photos))
-      console.log('ok')
-    } else {
-      pushToHistory('#/');
-      returnRoute('#/');
-    }
-  }).catch(() => {
-    pushToHistory('#/login');
-    loginView();
+function logoutView() {
+  console.log('logout view!');
+  logOutUser()
+  .then(data => {
+    state.userLoggedIn = false // again, just remember it somewhere
+    displayMessage(data.message)
+    renderLogoutLoginMenu() // this is called on log in and out (client side) at the moment, but it could be called always, on render
   })
 }
 
+function loginView() {
+  console.log('login view!');
+  displayMessage("Please log in")
+  createForm()
+}
+
+function homeView() {
+  console.log('home view!');
+  displayMessage("No place like home")
+  getPhotos().then(displayPhotos)
+}
+
 function aboutView() {
-  cleanView()
-  photosContainer.innerHTML = `<h1>About</h1>`
+  displayMessage("What this is all about?")
 }
 
-const routes = {
-  '#/': homeView,
-  '#/home' : homeView,
-  '#/admin': adminView,
-  '#/login': loginView,
-  '#/about': aboutView,
-  '#/logout': logout
+
+function adminView() {
+  console.log('admin view!');
+  cleanView(); // u need it SOMEWHERE in this automated flow, but where?
+  
+  return getUser().then(user => {
+      displayMessage(`Hello ${user.firstName}`)
+      getPhotos().then(displayPhotos)
+    }).catch(() => {
+    displayMessage('Prove you are admin by <a href="/#/login">logging in</a>') // dirty little boy, but no redirect loops!
+  })
 }
 
-function returnRoute(path) {
-  return routes[path]()
+
+function renderRoute(path) {
+  const routes = {
+    '#/':       homeView,
+    '#/admin':  adminView,
+    '#/login':  loginView,
+    '#/about':  aboutView,
+    '#/logout': logoutView
+  }
+  routes[path]()
 }
 
 function pushToHistory(path) {
   window.history.pushState({}, "", path)
 }
 
+// wrappers wrappers, helpers helpers
+function doTheMagic(hash){
+  cleanView()
+  renderLogoutLoginMenu()
+  pushToHistory(hash); 
+  renderRoute(hash);
+}
+
 window.addEventListener('popstate', e => {
-  deleteFormIfExists();
-  const path = e.target.window.location.hash;
-  pushToHistory(path);
-  returnRoute(path);
+  // console.log('POPSTATE!')
+  doTheMagic(e.target.window.location.hash)
 })
 
-const onNavItemClick = path => {
-  deleteFormIfExists();
-  pushToHistory(path);
-}
+
 
 linksEl.forEach(el => {
   el.addEventListener('click', e => {
+    // console.log('ON MENU CLICK')
     e.preventDefault();
-    deleteFormIfExists();
-    onNavItemClick(e.target.hash);
-    returnRoute(e.target.hash)
+    doTheMagic(e.target.hash)
   })
 })
+
+window.addEventListener('DOMContentLoaded', () => {
+  cleanView()
+  renderLogoutLoginMenu()
+  homeView() // TODO: his always loads home regardless of what page I'm (re)loading :(
+  }
+);

@@ -120,7 +120,7 @@ app.get('/fotki', getUsername, (req, res) => {
 })
 
 app.get('/user', getUsername, (req, res) => {
-  console.log(req.user);
+  console.log({'req.user': req.user});
   if(!req.user) {
     res.status(401).json({"message": "User not logged in"})
     return;
