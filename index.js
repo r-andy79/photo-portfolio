@@ -63,6 +63,12 @@ const images = [
     author: 'admin',
     private: true
   },
+  {
+    name: 'image678.jpg',
+    author: 'adam',
+    private: false,
+    route: 'jakis-tam'
+  }
 ]
 
 app.get('/logout', (req, res) => {
@@ -93,7 +99,8 @@ app.post('/login', (req, res) => {
   if(users[userId]?.password === password) {
     const sessionId = crypto.randomUUID();
     sessions[sessionId] = userId;
-    res.cookie('session_id', sessionId); // poczytać
+    const minute = 60 * 1000
+    res.cookie('session_id', sessionId, {maxAge: 10 * minute}); // poczytać
     res.status(201).json({"message": "User logged in"});
   } else {
     res.status(401).json({"message": "Invalid credentials"})
@@ -114,7 +121,7 @@ app.get('/fotki', getUsername, (req, res) => {
 })
 
 app.get('/user', getUsername, (req, res) => {
-  console.log(req.user);
+  console.log({'req.user': req.user});
   if(!req.user) {
     res.status(401).json({"message": "User not logged in"})
     return;
