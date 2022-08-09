@@ -8,7 +8,10 @@ const loginLink = document.querySelector('#login');
 
 // naturally, make the state slightly more persistent :)
 const state = {
-  userLoggedIn: false // gets overwritten, so make it better ;)
+  userLoggedIn: false, // gets overwritten, so make it better ;)
+  user: {
+    firstName: undefined
+  }
 }
 
 
@@ -111,6 +114,7 @@ function getPhotos() {
 function getUser() {
   return fetch('/user').then(res => {
     if(res.status === 401) {
+      state.userLoggedIn = false // backend says NO, backend knows better - we should always catch this and react, not just here, but everywhere
       throw new Error('unauthorized', {cause: {status: res.status}})
     } else {
       return res.json()
@@ -183,10 +187,18 @@ function pushToHistory(path) {
 
 // wrappers wrappers, helpers helpers
 function doTheMagic(hash){
+  // console.log('doTheMagic()');
+  // console.log('document.cookie', document.cookie)
+  
+  // simplistic but works -> ALWAYS cheaply check if user is logged in by knowing if the session cookie exists 
+  state.userLoggedIn = !!document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith('session_id'))
+  // console.log(state);
+
   cleanView()
   renderLogoutLoginMenu()
   pushToHistory(hash); 
   renderRoute(hash);
+
 }
 
 window.addEventListener('popstate', e => {
@@ -205,8 +217,7 @@ linksEl.forEach(el => {
 })
 
 window.addEventListener('DOMContentLoaded', () => {
-  cleanView()
-  renderLogoutLoginMenu()
-  homeView() // TODO: his always loads home regardless of what page I'm (re)loading :(
+    // console.log('DOM CONTENT LOADED')
+    doTheMagic(window.location.hash)
   }
 );
