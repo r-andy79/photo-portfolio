@@ -100,8 +100,7 @@ app.post('/login', (req, res) => {
     const sessionId = crypto.randomUUID();
     sessions[sessionId] = userId;
     const minute = 60 * 1000
-    res.cookie('session_id', sessionId, {maxAge: 5 * minute}); // poczytać
-    res.cookie('user_id', userId)
+    res.cookie('session_id', sessionId, {maxAge: 10 * minute}); // poczytać
     res.status(201).json({"message": "User logged in"});
   } else {
     res.status(401).json({"message": "Invalid credentials"})

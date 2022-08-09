@@ -169,17 +169,32 @@ function adminView() {
   })
 }
 
+function view404(path){
+  console.log('404!');
+  displayMessage(`No place like ${path}, go <a href="/#/">home</a>`)
+}
+
 
 function renderRoute(path) {
+  console.log({path}); 
   const routes = {
     '#/':       homeView,
     '#/admin':  adminView,
     '#/login':  loginView,
     '#/about':  aboutView,
-    '#/logout': logoutView
+    '#/logout': logoutView,
+    '#/404': view404
   }
-  routes[path]()
+  const fn = routes[path]
+  if(!fn){
+    pushToHistory('/#/404'); // TODO: history loop again...
+    view404(path);
+    return
+  } 
+  fn(path)
 }
+
+
 
 function pushToHistory(path) {
   window.history.pushState({}, "", path)
