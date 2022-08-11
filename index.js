@@ -21,6 +21,16 @@ const db = new sqlite3.Database('./mock.db', sqlite3.OPEN_READWRITE, (err) => {
 //   console.log('A new row has been created');
 // })
 
+// db.run(sql, ['goska', 'goska', '123', 'null', '2'], (err) => {
+//   if(err) return console.error(err.message);
+//   console.log('A new row has been created');
+// })
+
+// db.run(sql, ['adam', 'adam', '456', 'null', '3'], (err) => {
+//   if(err) return console.error(err.message);
+//   console.log('A new row has been created');
+// })
+
 const sql = `SELECT * FROM users`;
 
 db.all(sql, [], (err, rows) => {

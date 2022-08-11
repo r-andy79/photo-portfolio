@@ -205,6 +205,7 @@ function view404(path){
 function renderRoute(path) {
   console.log({path}); 
   const routes = {
+    '':         homeView,
     '#/':       homeView,
     '#/admin':  adminView,
     '#/login':  loginView,
