@@ -73,6 +73,27 @@ function createForm() {
   })
 };
 
+function createPhotoUploadForm() {
+  console.log('photo upload form');
+  const photoUploadForm = document.createElement('form');
+  photoUploadForm.id = 'upload-photos';
+  console.log(photoUploadForm);
+  const fileInputEl = document.createElement('input');
+  const labelInputEl = document.createElement('label');
+  const inputEl = document.createElement('input');
+  const submitEl = document.createElement('input');
+  fileInputEl.setAttribute('type', 'file')
+  labelInputEl.textContent = 'Wprowadź tagi opisujące zdjęcie'
+  inputEl.setAttribute('type', 'text');
+  submitEl.setAttribute('type', 'submit')
+  submitEl.setAttribute('value', 'upload photo')
+  labelInputEl.appendChild(inputEl);
+  photoUploadForm.appendChild(fileInputEl);
+  photoUploadForm.appendChild(labelInputEl);
+  photoUploadForm.appendChild(submitEl);
+  document.body.insertBefore(photoUploadForm, photosEl);
+}
+
 // helpers helpers...
 function renderLogoutLoginMenu() {
   if(state.userLoggedIn === true){
@@ -86,6 +107,11 @@ function renderLogoutLoginMenu() {
 
 function deleteFormIfExists() {
   const form = document.querySelector('form');
+  form && document.body.removeChild(form);
+}
+
+function deleteUploadFormIfExists() {
+  const form = document.querySelector('#upload-photos')
   form && document.body.removeChild(form);
 }
 
@@ -128,6 +154,7 @@ function cleanView() {
   messageEl.innerHTML = '';
   photosEl.innerHTML = '';
   deleteFormIfExists() // example of idempotent, just works, always
+  deleteUploadFormIfExists();
 }
 
 function logoutView() {
@@ -160,10 +187,10 @@ function aboutView() {
 function adminView() {
   console.log('admin view!');
   cleanView(); // u need it SOMEWHERE in this automated flow, but where?
-  
   return getUser().then(user => {
-      displayMessage(`Hello ${user.firstName}`)
-      getPhotos().then(displayPhotos)
+    createPhotoUploadForm();
+    displayMessage(`Hello ${user.firstName}`)
+    getPhotos().then(displayPhotos)
     }).catch(() => {
     displayMessage('Prove you are admin by <a href="/#/login">logging in</a>') // dirty little boy, but no redirect loops!
   })

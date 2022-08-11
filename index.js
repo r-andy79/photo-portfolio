@@ -1,8 +1,39 @@
 const crypto = require('crypto');
 const express = require('express');
+const sqlite3 = require('sqlite3').verbose();
 const cookieParser = require('cookie-parser');
 const app = express();
 const port = 3000;
+
+const db = new sqlite3.Database('./mock.db', sqlite3.OPEN_READWRITE, (err) => {
+  if(err) return console.error(err.message);
+
+  console.log('connection successful');
+})
+
+// db.run(`CREATE TABLE users(first_name, userId, password, access, id)`)
+
+// const sql = `INSERT INTO users (first_name, userId, password, access, id)
+//               VALUES(?,?,?,?,?)`
+
+// db.run(sql, ['John', 'admin', 'blabla', 'superuser', '1'], (err) => {
+//   if(err) return console.error(err.message);
+//   console.log('A new row has been created');
+// })
+
+const sql = `SELECT * FROM users`;
+
+db.all(sql, [], (err, rows) => {
+  if (err) return console.error(err.message);
+
+  rows.forEach(row => {
+    console.log(row);
+  })
+})
+
+db.close((err) => {
+  if (err) return console.error(err.message);
+})
 
 app.use(express.static('public'))
 app.use(express.json());
