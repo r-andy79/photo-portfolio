@@ -11,6 +11,8 @@ const db = new sqlite3.Database('./mock.db', sqlite3.OPEN_READWRITE, (err) => {
   console.log('connection successful');
 })
 
+// USERS
+
 // db.run(`CREATE TABLE users(first_name, userId, password, access, id)`)
 
 // const sql = `INSERT INTO users (first_name, userId, password, access, id)
@@ -31,7 +33,20 @@ const db = new sqlite3.Database('./mock.db', sqlite3.OPEN_READWRITE, (err) => {
 //   console.log('A new row has been created');
 // })
 
-const sql = `SELECT * FROM users`;
+// IMAGES
+
+// db.run(`CREATE TABLE sessions (session_id, user_id)`)
+
+
+function insertSession(sessionId, userId) {
+  const sql = `INSERT INTO sessions (session_id, user_id) VALUES (?,?)`;
+  db.run(sql, [sessionId, userId], (err) => {
+    if(err) return console.error(err.message);
+    console.log('A new row has been created');
+  })
+}
+
+const sql = `SELECT * FROM sessions`;
 
 db.all(sql, [], (err, rows) => {
   if (err) return console.error(err.message);
@@ -41,9 +56,9 @@ db.all(sql, [], (err, rows) => {
   })
 })
 
-db.close((err) => {
-  if (err) return console.error(err.message);
-})
+// db.close((err) => {
+//   if (err) return console.error(err.message);
+// })
 
 app.use(express.static('public'))
 app.use(express.json());
@@ -141,6 +156,7 @@ app.post('/login', (req, res) => {
     const sessionId = crypto.randomUUID();
     sessions[sessionId] = userId;
     const minute = 60 * 1000
+    insertSession(sessionId, userId);
     res.cookie('session_id', sessionId, {maxAge: 10 * minute}); // poczytać
     res.status(201).json({"message": "User logged in"});
   } else {
