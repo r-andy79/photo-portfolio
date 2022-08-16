@@ -111,8 +111,10 @@ function deleteFormIfExists(selector) {
 }
 
 function displayPhotos(photos) {
+  console.log(photos);
   photos.forEach(photo => {
-    photosEl.innerHTML += `<div>filename: ${photo.name}, author: ${photo.author}</div>`
+    console.log(photo)
+    photosEl.innerHTML += `<div>filename: ${photo.photoName}, author: ${photo.author}</div>`
   })
 }
 

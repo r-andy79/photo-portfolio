@@ -47,13 +47,13 @@ const db = new sqlite3.Database('./mock.db', sqlite3.OPEN_READWRITE, (err) => {
 // db.run(`CREATE TABLE images (photoName, author, private)`);
 
 
-// function insertSession(sessionId, userId) {
-//   const sql = `INSERT INTO sessions (session_id, user_id) VALUES (?,?)`;
-//   db.run(sql, [sessionId, userId], (err) => {
-//     if(err) return console.error(err.message);
-//     console.log('A new row has been created');
-//   })
-// }
+function insertSession(sessionId, userId) {
+  const sql = `INSERT INTO sessions (session_id, user_id) VALUES (?,?)`;
+  db.run(sql, [sessionId, userId], (err) => {
+    if(err) return console.error(err.message);
+    console.log('A new row has been created');
+  })
+}
 
 function insertPhoto(photoName, author, private) {
   const sql = `INSERT INTO images(photoName, author, private) VALUES (?,?,?)`;
@@ -70,15 +70,12 @@ function insertPhoto(photoName, author, private) {
 // insertPhoto('image567.jpg', 'admin', 'true');
 // insertPhoto('image678.jpg', 'adam', 'false');
 
-const sql = `SELECT * FROM images`;
+// const sql = `SELECT photoName, private FROM images WHERE author='adam'`;
 
-db.all(sql, [], (err, rows) => {
-  if (err) return console.error(err.message);
-
-  rows.forEach(row => {
-    console.log(row);
-  })
-})
+// db.all(sql, [], (err, rows) => {
+//   if (err) return console.error(err.message);
+//   console.log(rows);
+// })
 
 // db.close((err) => {
 //   if (err) return console.error(err.message);
@@ -187,8 +184,15 @@ app.post('/login', (req, res) => {
 
 app.get('/fotki', getUsername, (req, res) => {
   if(!req.user) {
-    const publicPhotos = images.filter(image => image.private === false);
-    res.status(200).send(publicPhotos);
+    // const publicPhotos = images.filter(image => image.private === false);
+    const sql = `SELECT * from images WHERE private='false'`
+    const publicPhotos = db.all(sql, [], (err, data) => {
+      if(err) {
+        return console.error(err.message)
+      } else {
+        res.status(200).send(data);
+      }
+    })
   } else {
     const allUserPhotos = images.filter(image => image.author === req.user.userId);
     const allPublicPhotos = images.filter(image => image.private === false);
