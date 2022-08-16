@@ -5,6 +5,11 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const port = 3000;
 
+app.use(express.static('public'))
+app.use(express.json());
+app.use(cookieParser());
+app.set('view engine', 'ejs');
+
 const db = new sqlite3.Database('./mock.db', sqlite3.OPEN_READWRITE, (err) => {
   if(err) return console.error(err.message);
 
@@ -33,20 +38,39 @@ const db = new sqlite3.Database('./mock.db', sqlite3.OPEN_READWRITE, (err) => {
 //   console.log('A new row has been created');
 // })
 
-// IMAGES
+// SESSIONS
 
 // db.run(`CREATE TABLE sessions (session_id, user_id)`)
 
+// IMAGES
 
-function insertSession(sessionId, userId) {
-  const sql = `INSERT INTO sessions (session_id, user_id) VALUES (?,?)`;
-  db.run(sql, [sessionId, userId], (err) => {
-    if(err) return console.error(err.message);
-    console.log('A new row has been created');
+// db.run(`CREATE TABLE images (photoName, author, private)`);
+
+
+// function insertSession(sessionId, userId) {
+//   const sql = `INSERT INTO sessions (session_id, user_id) VALUES (?,?)`;
+//   db.run(sql, [sessionId, userId], (err) => {
+//     if(err) return console.error(err.message);
+//     console.log('A new row has been created');
+//   })
+// }
+
+function insertPhoto(photoName, author, private) {
+  const sql = `INSERT INTO images(photoName, author, private) VALUES (?,?,?)`;
+  db.run(sql, [photoName, author, private], (err) => {
+    if(err) return console.error(err.message)
   })
 }
 
-const sql = `SELECT * FROM sessions`;
+// insertPhoto('image123.jpg', 'adam', 'false');
+// insertPhoto('image234.jpg', 'admin', 'false');
+// insertPhoto('image345.jpg', 'goska', 'true');
+// insertPhoto('image785.jpg', 'goska', 'false');
+// insertPhoto('image456.jpg', 'adam', 'true');
+// insertPhoto('image567.jpg', 'admin', 'true');
+// insertPhoto('image678.jpg', 'adam', 'false');
+
+const sql = `SELECT * FROM images`;
 
 db.all(sql, [], (err, rows) => {
   if (err) return console.error(err.message);
@@ -60,10 +84,7 @@ db.all(sql, [], (err, rows) => {
 //   if (err) return console.error(err.message);
 // })
 
-app.use(express.static('public'))
-app.use(express.json());
-app.use(cookieParser());
-app.set('view engine', 'ejs');
+
 
 const users = {
   admin: {

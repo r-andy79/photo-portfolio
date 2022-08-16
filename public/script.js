@@ -83,7 +83,7 @@ function createPhotoUploadForm() {
   const inputEl = document.createElement('input');
   const submitEl = document.createElement('input');
   fileInputEl.setAttribute('type', 'file')
-  labelInputEl.textContent = 'Wprowadź tagi opisujące zdjęcie'
+  labelInputEl.textContent = 'Please input tags to describe the photo'
   inputEl.setAttribute('type', 'text');
   submitEl.setAttribute('type', 'submit')
   submitEl.setAttribute('value', 'upload photo')
@@ -105,13 +105,8 @@ function renderLogoutLoginMenu() {
   }
 }
 
-function deleteFormIfExists() {
-  const form = document.querySelector('form');
-  form && document.body.removeChild(form);
-}
-
-function deleteUploadFormIfExists() {
-  const form = document.querySelector('#upload-photos')
+function deleteFormIfExists(selector) {
+  const form = document.querySelector(selector);
   form && document.body.removeChild(form);
 }
 
@@ -153,8 +148,8 @@ function cleanView() {
   // console.log('clean view :)')
   messageEl.innerHTML = '';
   photosEl.innerHTML = '';
-  deleteFormIfExists() // example of idempotent, just works, always
-  deleteUploadFormIfExists();
+  deleteFormIfExists('form') // example of idempotent, just works, always
+  deleteFormIfExists('upload-photos')
 }
 
 function logoutView() {
