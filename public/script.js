@@ -77,7 +77,6 @@ function createPhotoUploadForm() {
   console.log('photo upload form');
   const photoUploadForm = document.createElement('form');
   photoUploadForm.id = 'upload-photos';
-  console.log(photoUploadForm);
   const fileInputEl = document.createElement('input');
   const labelInputEl = document.createElement('label');
   const inputEl = document.createElement('input');
@@ -111,10 +110,8 @@ function deleteFormIfExists(selector) {
 }
 
 function displayPhotos(photos) {
-  console.log(photos);
   photos.forEach(photo => {
-    console.log(photo)
-    photosEl.innerHTML += `<div>filename: ${photo.photoName}, author: ${photo.author}</div>`
+    photosEl.innerHTML += `<div>filename: ${photo.name}, author: ${photo.author}, is private: ${photo.private}</div>`
   })
 }
 

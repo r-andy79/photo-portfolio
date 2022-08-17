@@ -44,7 +44,7 @@ const db = new sqlite3.Database('./mock.db', sqlite3.OPEN_READWRITE, (err) => {
 
 // IMAGES
 
-// db.run(`CREATE TABLE images (photoName, author, private)`);
+// db.run(`CREATE TABLE images (name, author, private)`);
 
 
 function insertSession(sessionId, userId) {
@@ -56,7 +56,7 @@ function insertSession(sessionId, userId) {
 }
 
 function insertPhoto(photoName, author, private) {
-  const sql = `INSERT INTO images(photoName, author, private) VALUES (?,?,?)`;
+  const sql = `INSERT INTO images(name, author, private) VALUES (?,?,?)`;
   db.run(sql, [photoName, author, private], (err) => {
     if(err) return console.error(err.message)
   })
@@ -70,7 +70,7 @@ function insertPhoto(photoName, author, private) {
 // insertPhoto('image567.jpg', 'admin', 'true');
 // insertPhoto('image678.jpg', 'adam', 'false');
 
-// const sql = `SELECT photoName, private FROM images WHERE author='adam'`;
+// const sql = `SELECT * FROM images`;
 
 // db.all(sql, [], (err, rows) => {
 //   if (err) return console.error(err.message);
@@ -186,7 +186,7 @@ app.get('/fotki', getUsername, (req, res) => {
   if(!req.user) {
     // const publicPhotos = images.filter(image => image.private === false);
     const sql = `SELECT * from images WHERE private='false'`
-    const publicPhotos = db.all(sql, [], (err, data) => {
+    db.all(sql, [], (err, data) => {
       if(err) {
         return console.error(err.message)
       } else {
@@ -194,11 +194,19 @@ app.get('/fotki', getUsername, (req, res) => {
       }
     })
   } else {
-    const allUserPhotos = images.filter(image => image.author === req.user.userId);
-    const allPublicPhotos = images.filter(image => image.private === false);
-    const allPhotos = [...allPublicPhotos, ...allUserPhotos];
-    const filteredPhotos = [...new Set(allPhotos)];
-    res.status(200).send(filteredPhotos);
+    // const allUserPhotos = images.filter(image => image.author === req.user.userId);
+    // const allPublicPhotos = images.filter(image => image.private === false);
+    // const allPhotos = [...allPublicPhotos, ...allUserPhotos];
+    // const filteredPhotos = [...new Set(allPhotos)];
+    const sql = `SELECT * from images WHERE author = '${req.user.userId}' UNION SELECT * from images WHERE private='false'`;
+    db.all(sql, [], (err, data) => {
+      if(err) {
+        return console.error(err.message)
+      } else {
+        console.log(data)
+        res.status(200).send(data);
+      }
+    })
   }
 })
 
@@ -213,7 +221,8 @@ app.get('/user', getUsername, (req, res) => {
 
 function getUsername(req, res, next) {
   const sessionId = req.cookies?.session_id;
-  const userId = sessions[sessionId] ?? undefined;
+  const userId = sessions[sessionId] ?? undefined; 
+  console.log(userId);
   const user = users[userId];
   req.user = user;
   next();
