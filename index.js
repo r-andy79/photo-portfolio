@@ -70,18 +70,39 @@ function insertPhoto(photoName, author, private) {
 // insertPhoto('image567.jpg', 'admin', 'true');
 // insertPhoto('image678.jpg', 'adam', 'false');
 
-// const sql = `SELECT * FROM images`;
-
-// db.all(sql, [], (err, rows) => {
-//   if (err) return console.error(err.message);
+const sql = `SELECT * FROM sessions`;
+// const sql = `SELECT password from users WHERE userId = 'goska'`;
+// const user = db.get(sql, [], (err, rows) => {
+//   if(err) return console.error(err.message);
 //   console.log(rows);
 // })
+
+db.all(sql, [], (err, rows) => {
+  if (err) return console.error(err.message);
+  console.log(rows);
+})
 
 // db.close((err) => {
 //   if (err) return console.error(err.message);
 // })
 
+function getUserId(session_id) {
+  return new Promise((resolve, reject) => {
+    db.get(`SELECT user_id from sessions WHERE session_id='${session_id}'`, [], (err, rows) => {
+      if(err) reject(err);
+      resolve(rows);
+    })
+  })
+}
 
+let promise = getUserId('e7e3e16c-783d-49c4-b4ac-07347e48370e');
+promise.then(results => {
+  const user = results.user_id;
+  db.get(`SELECT first_name from users WHERE userId = '${user}'`, [], (err, rows) => {
+    if(err) return console.error(err);
+    console.log(rows);
+  })
+});
 
 const users = {
   admin: {
@@ -102,48 +123,49 @@ const users = {
   }
 }
 
+
 const sessions = {
   // '204b61d3-f92e-47b4-b6dd-767057dad700': 'admin'
 };
 
-const images = [
-  {
-    name: 'image123.jpg',
-    author: 'adam',
-    private: false
-  },
-  {
-    name: 'image234.jpg',
-    author: 'admin',
-    private: false
-  },
-  {
-    name: 'image345.jpg',
-    author: 'goska',
-    private: true
-  },
-  {
-    name: 'image785.jpg',
-    author: 'goska',
-    private: false
-  },
-  {
-    name: 'image456.jpg',
-    author: 'adam',
-    private: true
-  },
-  {
-    name: 'image567.jpg',
-    author: 'admin',
-    private: true
-  },
-  {
-    name: 'image678.jpg',
-    author: 'adam',
-    private: false,
-    route: 'jakis-tam'
-  }
-]
+// const images = [
+//   {
+//     name: 'image123.jpg',
+//     author: 'adam',
+//     private: false
+//   },
+//   {
+//     name: 'image234.jpg',
+//     author: 'admin',
+//     private: false
+//   },
+//   {
+//     name: 'image345.jpg',
+//     author: 'goska',
+//     private: true
+//   },
+//   {
+//     name: 'image785.jpg',
+//     author: 'goska',
+//     private: false
+//   },
+//   {
+//     name: 'image456.jpg',
+//     author: 'adam',
+//     private: true
+//   },
+//   {
+//     name: 'image567.jpg',
+//     author: 'admin',
+//     private: true
+//   },
+//   {
+//     name: 'image678.jpg',
+//     author: 'adam',
+//     private: false,
+//     route: 'jakis-tam'
+//   }
+// ]
 
 app.get('/logout', (req, res) => {
   const sessionId = req.cookies?.session_id;
@@ -163,7 +185,7 @@ app.get('/', (_, res) => {
 
 
 app.post('/login', (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   const userId = req.body?.userId;
   const password = req.body?.password;
   if(!userId || !password) {
@@ -203,7 +225,6 @@ app.get('/fotki', getUsername, (req, res) => {
       if(err) {
         return console.error(err.message)
       } else {
-        console.log(data)
         res.status(200).send(data);
       }
     })
@@ -221,8 +242,7 @@ app.get('/user', getUsername, (req, res) => {
 
 function getUsername(req, res, next) {
   const sessionId = req.cookies?.session_id;
-  const userId = sessions[sessionId] ?? undefined; 
-  console.log(userId);
+  const userId = sessions[sessionId] ?? undefined;
   const user = users[userId];
   req.user = user;
   next();
