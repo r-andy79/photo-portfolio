@@ -18,10 +18,17 @@ const db = new sqlite3.Database('./mock.db', sqlite3.OPEN_READWRITE, (err) => {
 
 function insertSession(sessionId, userId) {
   const sql = `INSERT INTO sessions (session_id, user_id) VALUES (?,?)`;
-  db.run(sql, [sessionId, userId], (err) => {
-    if (err) return console.error(err.message);
-    console.log('A new row has been created');
+  return new Promise((resolve, reject) => {
+    db.run(sql, [sessionId, userId], (err, res) => {
+      if (err) {
+        reject(err)
+      } else {
+        console.log('session inserted');
+        resolve(res)
+      }
+    })
   })
+  
 }
 
 function insertPhoto(photoName, author, priv) {
@@ -33,28 +40,12 @@ function insertPhoto(photoName, author, priv) {
 }
 
 function insertUser(first_name, userId, password, access, id) {
-  const sql = `INSERT INTO users (first_name, userId, password, access, id)
-      VALUES(?,?,?,?,?)`
+  const sql = `INSERT INTO users (first_name, userId, password, access, id) VALUES(?,?,?,?,?)`
     db.run(sql, [first_name, userId, password, access, id], (err) => {
-      if (err) return console.error({dupa: err.message});
-      console.log('user was inserted');
+      if (err) return console.error(err.message);
+      console.log('user inserted');
     })
 }
-
-
-
-// const sql = `SELECT * FROM users`;
-// const sql = `SELECT password from users WHERE userId = 'goska'`;
-// const user = db.get(sql, [], (err, rows) => {
-//   if(err) return console.error(err.message);
-//   console.log(rows);
-// })
-
-// db.all(sql, [], (err, rows) => {
-//   if (err) return console.error('-=------>', err.message);
-//   console.log(rows);
-// })
-
 
 
 function getSessionById(sessionId) {
@@ -71,7 +62,7 @@ function getSessionById(sessionId) {
 
 function getUserById(userId) {
   return new Promise((resolve, reject) => {
-    db.get(`SELECT first_name from users WHERE userId = '${userId}'`, [], (err, rows) => {
+    db.get(`SELECT * from users WHERE userId = '${userId}'`, [], (err, rows) => {
       if (err) {
         reject(err);
       } else {
@@ -87,10 +78,9 @@ app.get('/logout', (req, res) => {
   const sessionId = req.cookies?.session_id;
   console.log(req.cookies, sessions);
   if (!sessionId) {
-    res.json({ "message": "You're not logged in" })
-    return
+    return res.json({ "message": "You're not logged in" })
   }
-  delete sessions[sessionId];
+  delete sessions[sessionId]; // TODO: REMOVE FROM DB! :)
   res.clearCookie('session_id', sessionId).json({ "message": "You have been logged out" });
 })
 
@@ -101,23 +91,25 @@ app.get('/', (_, res) => {
 
 
 app.post('/login', (req, res) => {
-  // console.log(req.body);
+  console.log('/login', req.body);
   const userId = req.body?.userId;
   const password = req.body?.password;
   if (!userId || !password) {
-    res.status(400).json({ "message": "invalid syntax" });
-    return;
+    return res.status(400).json({ "message": "invalid syntax" });
   }
-  if (users[userId]?.password === password) {
+  getUserById(userId).then(user => {
+    console.log({ user })
+    if(user.password !== password){
+      console.error('BAD PASSWORD')
+      return res.status(401).json({ "message": "Invalid credentials" })
+    }
     const sessionId = crypto.randomUUID();
-    sessions[sessionId] = userId;
-    const minute = 60 * 1000
-    insertSession(sessionId, userId); // ufamy ze sie wykonala
-    res.cookie('session_id', sessionId, { maxAge: 10 * minute }); // poczytać
-    res.status(201).json({ "message": "User logged in" });
-  } else {
-    res.status(401).json({ "message": "Invalid credentials" })
-  }
+    // I made insertSession thenable, so I only respond with cookie once I finished inserting session
+    return insertSession(sessionId, userId).then(() => {
+      res.cookie('session_id', sessionId, { maxAge: 10 * 60 * 1000 }); // poczytać
+      res.status(201).json({ "message": "User logged in" });
+    })
+  })
 })
 
 app.get('/fotki', getUsername, (req, res) => {
@@ -158,15 +150,26 @@ app.get('/user', getUsername, (req, res) => {
 
 function getUsername(req, res, next) {
   const sessionId = req.cookies?.session_id;
-  // const userId = sessions[sessionId] ?? undefined;
+
+  // I may or may NOT be logged in, we don't care, moving on
+  if(!sessionId){
+    return next() 
+  }
+  // but if I have the session cookie, let's check it:
   getSessionById(sessionId)
     .then(session => {
+      // .THEN means I have corresponding session in my table so I go deeper:
       return getUserById(session.user_id)
     })
     .then(user => {
+      //.THEN it seems I even have the user for this user_id, cool, I stick it into req
       req.user = user;
-      next();
     })
+    .catch(e => {
+      // all rejects can happen here, but they all mean the same - there is no valid user
+      console.log({ 'serious error? :)': e })
+    })
+    .finally(next) // so regardless, I always need to call next() - I don't stop processing requests
 }
 
 app.listen(port, () => {

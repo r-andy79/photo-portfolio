@@ -12,6 +12,7 @@ const db = new sqlite3.Database('./mock.db', sqlite3.OPEN_READWRITE, (err) => {
   })
 })
 
+
 function seedDatabase() {
     seedUsers();
     seedSessions();
