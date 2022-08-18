@@ -27,8 +27,7 @@ function insertSession(sessionId, userId) {
         resolve(res)
       }
     })
-  })
-  
+  }) 
 }
 
 function insertPhoto(photoName, author, priv) {
@@ -72,16 +71,31 @@ function getUserById(userId) {
   })
 }
 
+function removeData(data) {
+  return new Promise((resolve, reject) => {
+    db.run(`DELETE FROM sessions WHERE session_id='${data}'`, [], (err, rows) => {
+      if(err) {
+        reject(err)
+      } else {
+        resolve(rows);
+      }
+    })
+  })
+}
+
 
 
 app.get('/logout', (req, res) => {
   const sessionId = req.cookies?.session_id;
-  console.log(req.cookies, sessions);
+  // console.log(req.cookies, sessions);
   if (!sessionId) {
     return res.json({ "message": "You're not logged in" })
   }
-  delete sessions[sessionId]; // TODO: REMOVE FROM DB! :)
-  res.clearCookie('session_id', sessionId).json({ "message": "You have been logged out" });
+  // delete sessions[sessionId]; // TODO: REMOVE FROM DB! :)
+  removeData(sessionId)
+  .then(() => {
+    res.clearCookie('session_id', sessionId).json({ "message": "You have been logged out" });
+  })
 })
 
 
