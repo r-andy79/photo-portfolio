@@ -183,7 +183,7 @@ function adminView() {
   cleanView(); // u need it SOMEWHERE in this automated flow, but where?
   return getUser().then(user => {
     createPhotoUploadForm();
-    displayMessage(`Hello ${user.firstName}`)
+    displayMessage(`Hello ${user.first_name}`)
     getPhotos().then(displayPhotos)
     }).catch(() => {
     displayMessage('Prove you are admin by <a href="/#/login">logging in</a>') // dirty little boy, but no redirect loops!
