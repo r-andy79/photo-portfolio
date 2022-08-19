@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.set('view engine', 'ejs');
 
-const db = new sqlite3.Database('./mock.db', sqlite3.OPEN_READWRITE, (err) => {
+const db = new sqlite3.Database('./mock.sqlite', sqlite3.OPEN_READWRITE, (err) => {
   if (err) return console.error(err.message);
 
   console.log('connection successful');
@@ -48,8 +48,9 @@ function insertUser(first_name, userId, password, access, id) {
 
 
 function getSessionById(sessionId) {
+  const sql = `SELECT user_id from sessions WHERE session_id='${sessionId}'`;
   return new Promise((resolve, reject) => {
-    db.get(`SELECT user_id from sessions WHERE session_id='${sessionId}'`, [], (err, rows) => {
+    db.get(sql, [], (err, rows) => {
       if (err) {
         reject(err);
       } else {
@@ -73,11 +74,11 @@ function getUserById(userId) {
 
 function removeData(data) {
   return new Promise((resolve, reject) => {
-    db.run(`DELETE FROM sessions WHERE session_id='${data}'`, [], (err, rows) => {
+    db.run(`DELETE FROM sessions WHERE session_id='${data}'`, [], (err, result) => {
       if(err) {
         reject(err)
       } else {
-        resolve(rows);
+        resolve(result);
       }
     })
   })
