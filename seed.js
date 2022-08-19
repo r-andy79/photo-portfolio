@@ -1,10 +1,14 @@
 const sqlite3 = require('sqlite3').verbose();
+const crypto = require('crypto');
+const hash = crypto.createHash('sha256');
 
 
 const db = new sqlite3.Database('./mock.sqlite', sqlite3.OPEN_READWRITE, (err) => {
   if (err) return console.error(err.message);
 
   console.log('connection successful');
+  // dropTable('images')
+  // seedUsers()
   seedDatabase()
 
   db.close((err) => {

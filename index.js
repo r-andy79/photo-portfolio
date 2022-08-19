@@ -84,15 +84,38 @@ function removeData(data) {
   })
 }
 
+function getPublicPhotos() {
+  return new Promise((resolve, reject) => {
+    db.all(`SELECT * from images WHERE private='false'`, [], (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        // console.log(result)
+        resolve(data)
+      }
+    })
+  })
+}
+
+function getAllPhotos(user) {
+  return new Promise((resolve, reject) => {
+    db.all(`SELECT * from images WHERE author = '${user}' UNION SELECT * from images WHERE private='false'`, [], (err, data) => {
+      if(err) {
+        reject(err)
+      } else {
+        resolve(data)
+      }
+    })
+  })
+}
+
 
 
 app.get('/logout', (req, res) => {
   const sessionId = req.cookies?.session_id;
-  // console.log(req.cookies, sessions);
   if (!sessionId) {
     return res.json({ "message": "You're not logged in" })
   }
-  // delete sessions[sessionId]; // TODO: REMOVE FROM DB! :)
   removeData(sessionId)
   .then(() => {
     res.clearCookie('session_id', sessionId).json({ "message": "You have been logged out" });
@@ -129,28 +152,9 @@ app.post('/login', (req, res) => {
 
 app.get('/fotki', getUsername, (req, res) => {
   if (!req.user) {
-    // const publicPhotos = images.filter(image => image.private === false);
-    const sql = `SELECT * from images WHERE private='false'`
-    db.all(sql, [], (err, data) => {
-      if (err) {
-        return console.error(err.message)
-      } else {
-        res.status(200).send(data);
-      }
-    })
+    getPublicPhotos().then(photos => res.status(200).send(photos))
   } else {
-    // const allUserPhotos = images.filter(image => image.author === req.user.userId);
-    // const allPublicPhotos = images.filter(image => image.private === false);
-    // const allPhotos = [...allPublicPhotos, ...allUserPhotos];
-    // const filteredPhotos = [...new Set(allPhotos)];
-    const sql = `SELECT * from images WHERE author = '${req.user.userId}' UNION SELECT * from images WHERE private='false'`;
-    db.all(sql, [], (err, data) => {
-      if (err) {
-        return console.error(err.message)
-      } else {
-        res.status(200).send(data);
-      }
-    })
+    getAllPhotos(req.user.userId).then(photos => res.status(200).send(photos))
   }
 })
 
