@@ -7,8 +7,9 @@ const db = new sqlite3.Database('./mock.sqlite', sqlite3.OPEN_READWRITE, (err) =
   if (err) return console.error(err.message);
 
   console.log('connection successful');
+  // dropTable('sessions')
+  // dropTable('users')
   // dropTable('images')
-  // seedUsers()
   seedDatabase()
 
   db.close((err) => {
@@ -32,13 +33,14 @@ function seedImages() {
             console.error(err.message)
         } else {
             console.log('A images table has been created');
-            insertPhoto('image123.jpg', 'adam', 'false');
-            insertPhoto('image234.jpg', 'admin', 'false');
-            insertPhoto('image345.jpg', 'goska', 'true');
-            insertPhoto('image785.jpg', 'goska', 'false');
-            insertPhoto('image456.jpg', 'adam', 'true');
-            insertPhoto('image567.jpg', 'admin', 'true');
-            insertPhoto('image678.jpg', 'adam', 'false');
+            insertPhoto('https://picsum.photos/id/1/600/400', 'adam', 'false');
+            insertPhoto('https://picsum.photos/id/4/600/400', 'admin', 'false');
+            insertPhoto('https://picsum.photos/id/7/600/400', 'goska', 'true');
+            insertPhoto('https://picsum.photos/id/10/600/400', 'goska', 'false');
+            insertPhoto('https://picsum.photos/id/13/600/400', 'adam', 'true');
+            insertPhoto('https://picsum.photos/id/16/600/400', 'admin', 'true');
+            insertPhoto('https://picsum.photos/id/19/600/400', 'adam', 'false');
+            insertPhoto('https://picsum.photos/id/22/600/400', 'adam', 'false');
         };
     });
 }
