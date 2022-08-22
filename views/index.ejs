@@ -33,8 +33,7 @@
         width: 100%;
       }
 
-      #gallery {
-        outline: 1px solid tomato;
+      #gallery, #photos {
         display: grid;
         grid-template-columns: 1fr;
         gap: 1em;
@@ -47,19 +46,19 @@
       }
 
       @media (min-width: 768px) {
-        #gallery {
+        #gallery, #photos {
           grid-template-columns: repeat(2, 1fr);
         }
       }
 
       @media (min-width: 992px) {
-        #gallery {
+        #gallery, #photos {
           grid-template-columns: repeat(3, 1fr);
         }
       }
 
       @media (min-width: 1200px) {
-        #gallery {
+        #gallery, #photos {
           grid-template-columns: repeat(4, 1fr);
         }
       }
@@ -76,7 +75,7 @@
     </nav>
     <div id="message">Good day, isn't it?</div>
     <div id="photos"></div>
-    <div id="gallery">
+    <!-- <div id="gallery">
       <img src="https://picsum.photos/id/1/600/400" alt="">
       <img src="https://picsum.photos/id/4/600/400" alt="">
       <img src="https://picsum.photos/id/7/600/400" alt="">
@@ -85,6 +84,6 @@
       <img src="https://picsum.photos/id/16/600/400" alt="">
       <img src="https://picsum.photos/id/19/600/400" alt="">
       <img src="https://picsum.photos/id/22/600/400" alt="">
-    </div>
+    </div> -->
   </body>
 </html>
