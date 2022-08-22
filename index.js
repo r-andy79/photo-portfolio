@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const express = require('express');
+const upload = requires('express-fileupload');
 const sqlite3 = require('sqlite3').verbose();
 const cookieParser = require('cookie-parser');
 const app = express();
@@ -109,8 +110,6 @@ function getAllPhotos(user) {
   })
 }
 
-
-
 app.get('/logout', (req, res) => {
   const sessionId = req.cookies?.session_id;
   if (!sessionId) {
@@ -125,6 +124,14 @@ app.get('/logout', (req, res) => {
 
 app.get('/', (_, res) => {
   res.render('index');
+})
+
+app.post('/insert', (req, res) => {
+  console.log('/insert', req.body)
+  const isPrivate = req.body?.isPrivate;
+  const fileLocation = req.body?.fileLocation;
+  insertPhoto(fileLocation, 'admin', String(Boolean(isPrivate)));
+  return res.status(200).json({ "message": "ok" })
 })
 
 

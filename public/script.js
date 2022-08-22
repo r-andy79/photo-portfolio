@@ -80,17 +80,41 @@ function createPhotoUploadForm() {
   const fileInputEl = document.createElement('input');
   const labelInputEl = document.createElement('label');
   const inputEl = document.createElement('input');
+  const labelCheckboxEl = document.createElement('label');
+  const checkboxEl = document.createElement('input');
   const submitEl = document.createElement('input');
   fileInputEl.setAttribute('type', 'file')
   labelInputEl.textContent = 'Please input tags to describe the photo'
+  labelCheckboxEl.textContent = 'Tick checkbox if photo is private'
   inputEl.setAttribute('type', 'text');
+  checkboxEl.setAttribute('type', 'checkbox');
+  checkboxEl.setAttribute('name', 'isPrivate');
   submitEl.setAttribute('type', 'submit')
   submitEl.setAttribute('value', 'upload photo')
   labelInputEl.appendChild(inputEl);
+  labelCheckboxEl.appendChild(checkboxEl);
   photoUploadForm.appendChild(fileInputEl);
+  photoUploadForm.appendChild(labelCheckboxEl);
   photoUploadForm.appendChild(labelInputEl);
   photoUploadForm.appendChild(submitEl);
   document.body.insertBefore(photoUploadForm, photosEl);
+
+  photoUploadForm.addEventListener('submit', e => {
+    e.preventDefault()
+    const isPrivate = e.target[1].checked;
+    const fileLocation = e.target[2].value;
+    const body = { isPrivate, fileLocation }
+
+    const data = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    }
+    insertData(data)
+    .then(response => console.log(response))
+  })
 }
 
 // helpers helpers...
@@ -113,6 +137,10 @@ function displayPhotos(photos) {
   photos.forEach(photo => {
     photosEl.innerHTML += `<div><img src=${photo.name} alt="">author: ${photo.author}, private: ${photo.private}</div>`
   })
+}
+
+function insertData(body) {
+  return fetch('/insert', body)
 }
 
 function displayMessage(message) {
