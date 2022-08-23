@@ -84,6 +84,7 @@ function createPhotoUploadForm() {
   const checkboxEl = document.createElement('input');
   const submitEl = document.createElement('input');
   fileInputEl.setAttribute('type', 'file')
+  fileInputEl.setAttribute('name', 'sampleFile')
   labelInputEl.textContent = 'Please input tags to describe the photo'
   labelCheckboxEl.textContent = 'Tick checkbox if photo is private'
   inputEl.setAttribute('type', 'text');
@@ -101,9 +102,11 @@ function createPhotoUploadForm() {
 
   photoUploadForm.addEventListener('submit', e => {
     e.preventDefault()
+    console.log(e.target);
+    const fileEl = e.target.firstChild.files[0];
     const isPrivate = e.target[1].checked;
-    const fileLocation = e.target[2].value;
-    const body = { isPrivate, fileLocation }
+    const metaData = e.target[2].value;
+    const body = { fileEl, isPrivate, metaData }
 
     const data = {
       method: 'POST',
@@ -112,8 +115,10 @@ function createPhotoUploadForm() {
       },
       body: JSON.stringify(body)
     }
-    insertData(data)
-    .then(response => console.log(response))
+    console.log(body)
+    return fetch('/insert', data)
+    // insertData(data)
+    // .then(response => console.log(response))
   })
 }
 

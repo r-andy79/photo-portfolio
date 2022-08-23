@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const express = require('express');
-const upload = requires('express-fileupload');
+const upload = require('express-fileupload');
 const sqlite3 = require('sqlite3').verbose();
 const cookieParser = require('cookie-parser');
 const app = express();
@@ -9,6 +9,7 @@ const port = 3000;
 app.use(express.static('public'))
 app.use(express.json());
 app.use(cookieParser());
+app.use(upload());
 app.set('view engine', 'ejs');
 
 const db = new sqlite3.Database('./mock.sqlite', sqlite3.OPEN_READWRITE, (err) => {
@@ -110,6 +111,20 @@ function getAllPhotos(user) {
   })
 }
 
+function insertFile(file) {
+  let uploadPath;
+  uploadPath = __dirname + '/upload/' + file.name;
+  return new Promise((resolve, reject) => {
+    file.mv(uploadPath, err => {
+      if(err) {
+        reject(err)
+      } else {
+        resolve(data)
+      }
+    })
+  })
+}
+
 app.get('/logout', (req, res) => {
   const sessionId = req.cookies?.session_id;
   if (!sessionId) {
@@ -128,10 +143,13 @@ app.get('/', (_, res) => {
 
 app.post('/insert', (req, res) => {
   console.log('/insert', req.body)
+  const fileEl = req.files?.sampleFile;
+  console.log(fileEl);
   const isPrivate = req.body?.isPrivate;
-  const fileLocation = req.body?.fileLocation;
-  insertPhoto(fileLocation, 'admin', String(Boolean(isPrivate)));
-  return res.status(200).json({ "message": "ok" })
+  const metaData = req.body?.metaData;
+  console.log({fileEl, isPrivate, metaData});
+  // return insertFile(fileEl).then(data => console.log(data)).then(() => res.status(200).json({ "message": "ok" }))
+  // insertPhoto(fileLocation, 'admin', String(Boolean(isPrivate)));
 })
 
 
