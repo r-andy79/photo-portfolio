@@ -106,16 +106,16 @@ function createPhotoUploadForm() {
     const fileEl = e.target.firstChild.files[0];
     const isPrivate = e.target[1].checked;
     const metaData = e.target[2].value;
-    const body = { fileEl, isPrivate, metaData }
+    
+    const formData = new FormData()
+    formData.append('sampleFile', fileEl)
+    formData.append('isPrivate', isPrivate)
+    formData.append('metaData', metaData)
 
     const data = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
+      body: formData
     }
-    console.log(body)
     return fetch('/insert', data)
     // insertData(data)
     // .then(response => console.log(response))
