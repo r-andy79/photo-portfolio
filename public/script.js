@@ -105,12 +105,12 @@ function createPhotoUploadForm() {
     console.log(e.target);
     const fileEl = e.target.firstChild.files[0];
     const isPrivate = e.target[1].checked;
-    const metaData = e.target[2].value;
+    const meta = e.target[2].value;
     
     const formData = new FormData()
     formData.append('sampleFile', fileEl)
     formData.append('isPrivate', isPrivate)
-    formData.append('metaData', metaData)
+    formData.append('metaData', meta)
 
     const data = {
       method: 'POST',
@@ -133,6 +133,11 @@ function renderLogoutLoginMenu() {
   }
 }
 
+function slicePath(path) {
+  const index = path.indexOf('/')
+  return path.slice(index)
+}
+
 function deleteFormIfExists(selector) {
   const form = document.querySelector(selector);
   form && document.body.removeChild(form);
@@ -140,7 +145,9 @@ function deleteFormIfExists(selector) {
 
 function displayPhotos(photos) {
   photos.forEach(photo => {
-    photosEl.innerHTML += `<div><img src=${photo.name} alt="">author: ${photo.author}, private: ${photo.private}</div>`
+    const path = slicePath(photo.name);
+    console.log(path);
+    photosEl.innerHTML += `<div><img src=${path} alt="">author: ${photo.author}, private: ${photo.private}</div>`
   })
 }
 

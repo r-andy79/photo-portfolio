@@ -10,7 +10,8 @@ const db = new sqlite3.Database('./mock.sqlite', sqlite3.OPEN_READWRITE, (err) =
   // dropTable('sessions')
   // dropTable('users')
   // dropTable('images')
-  seedDatabase()
+  seedImages()
+  // seedDatabase()
 
   db.close((err) => {
     if (err) return console.error(err.message);
@@ -27,20 +28,21 @@ function seedImages() {
     db.run(`CREATE TABLE IF NOT EXISTS images (
       name TEXT, 
       author TEXT, 
-      private TEXT
+      private TEXT,
+      meta TEXT
       )`, [], err => {
         if (err) {
             console.error(err.message)
         } else {
             console.log('A images table has been created');
-            insertPhoto('https://picsum.photos/id/1/600/400', 'adam', 'false');
-            insertPhoto('https://picsum.photos/id/4/600/400', 'admin', 'false');
-            insertPhoto('https://picsum.photos/id/7/600/400', 'goska', 'true');
-            insertPhoto('https://picsum.photos/id/10/600/400', 'goska', 'false');
-            insertPhoto('https://picsum.photos/id/13/600/400', 'adam', 'true');
-            insertPhoto('https://picsum.photos/id/16/600/400', 'admin', 'true');
-            insertPhoto('https://picsum.photos/id/19/600/400', 'adam', 'false');
-            insertPhoto('https://picsum.photos/id/22/600/400', 'adam', 'false');
+            insertPhoto('https://picsum.photos/id/1/600/400', 'adam', 'false', 'abc,def');
+            insertPhoto('https://picsum.photos/id/4/600/400', 'admin', 'false', 'ghi,jkl');
+            insertPhoto('https://picsum.photos/id/7/600/400', 'goska', 'true', 'mno,pqr');
+            insertPhoto('https://picsum.photos/id/10/600/400', 'goska', 'false', 'stu,vwx');
+            insertPhoto('https://picsum.photos/id/13/600/400', 'adam', 'true', 'yza,bcd');
+            insertPhoto('https://picsum.photos/id/16/600/400', 'admin', 'true', 'efg,hij');
+            insertPhoto('https://picsum.photos/id/19/600/400', 'adam', 'false', 'klm,nop');
+            insertPhoto('https://picsum.photos/id/22/600/400', 'adam', 'false', 'qrs,tuv');
         };
     });
 }
@@ -55,9 +57,9 @@ function seedSessions() {
   })
 }
 
-function insertPhoto(photoName, author, priv) {
-    const sql = `INSERT INTO images(name, author, private) VALUES (?,?,?)`;
-    db.run(sql, [photoName, author, priv], (err) => {
+function insertPhoto(photoName, author, priv, meta) {
+    const sql = `INSERT INTO images(name, author, private, meta) VALUES (?,?,?,?)`;
+    db.run(sql, [photoName, author, priv, meta], (err) => {
       if (err) return console.error(err.message)
       console.log('photo inserted')
     })

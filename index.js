@@ -1,12 +1,14 @@
 const crypto = require('crypto');
 const express = require('express');
 const upload = require('express-fileupload');
+const path = require('path')
 const sqlite3 = require('sqlite3').verbose();
 const cookieParser = require('cookie-parser');
 const app = express();
 const port = 3000;
 
 app.use(express.static('public'))
+app.use(express.static('upload'))
 app.use(express.json());
 app.use(cookieParser());
 app.use(upload());
@@ -32,9 +34,9 @@ function insertSession(sessionId, userId) {
   }) 
 }
 
-function insertPhoto(photoName, author, priv) {
-  const sql = `INSERT INTO images(name, author, private) VALUES (?,?,?)`;
-  db.run(sql, [photoName, author, priv], (err) => {
+function insertPhoto(photoName, author, priv, meta) {
+  const sql = `INSERT INTO images(name, author, private, meta) VALUES (?,?,?,?)`;
+  db.run(sql, [photoName, author, priv, meta], (err) => {
     if (err) return console.error(err.message)
     console.log('photo inserted')
   })
@@ -119,7 +121,7 @@ function insertFile(file) {
       if(err) {
         reject(err)
       } else {
-        resolve(data)
+        resolve(uploadPath)
       }
     })
   })
@@ -144,12 +146,10 @@ app.get('/', (_, res) => {
 app.post('/insert', (req, res) => {
   console.log('/insert', req.body)
   const fileEl = req.files?.sampleFile;
-  console.log(fileEl);
   const isPrivate = req.body?.isPrivate;
   const metaData = req.body?.metaData;
   console.log({fileEl, isPrivate, metaData});
-  // return insertFile(fileEl).then(data => console.log(data)).then(() => res.status(200).json({ "message": "ok" }))
-  // insertPhoto(fileLocation, 'admin', String(Boolean(isPrivate)));
+  return insertFile(fileEl).then(fileLocation => insertPhoto(fileLocation, 'admin', isPrivate, metaData)).then(() => res.status(200).json({ "message": "ok" }))
 })
 
 
