@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto';
 import express, { static as ss, json } from 'express';
 import upload from 'express-fileupload';
 import sqlite3 from 'sqlite3'
+import path from 'path'
 import cookieParser from 'cookie-parser';
 const app = express();
 const port = 3000;
@@ -114,6 +115,7 @@ function getAllPhotos(user) {
 
 function insertFile(file) {
   let uploadPath;
+  const __dirname = path.resolve(path.dirname(''));
   uploadPath = __dirname + '/upload/' + file.name;
   return new Promise((resolve, reject) => {
     file.mv(uploadPath, err => {
