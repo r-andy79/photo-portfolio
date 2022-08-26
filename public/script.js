@@ -134,7 +134,11 @@ function renderLogoutLoginMenu() {
 }
 
 function slicePath(path) {
-  const index = path.indexOf('/')
+  let index
+  index = path.lastIndexOf('/')
+  if(index === -1){
+    index = path.lastIndexOf('\\')
+  }
   return path.slice(index).replace('/upload', '');
 }
 
