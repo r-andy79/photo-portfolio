@@ -135,7 +135,7 @@ function renderLogoutLoginMenu() {
 
 function slicePath(path) {
   const index = path.indexOf('/')
-  return path.slice(index)
+  return path.slice(index).replace('/upload', '');
 }
 
 function deleteFormIfExists(selector) {

@@ -35,14 +35,14 @@ function seedImages() {
             console.error(err.message)
         } else {
             console.log('A images table has been created');
-            insertPhoto('https://picsum.photos/id/1/600/400', 'adam', 'false', 'abc,def');
-            insertPhoto('https://picsum.photos/id/4/600/400', 'admin', 'false', 'ghi,jkl');
-            insertPhoto('https://picsum.photos/id/7/600/400', 'goska', 'true', 'mno,pqr');
-            insertPhoto('https://picsum.photos/id/10/600/400', 'goska', 'false', 'stu,vwx');
-            insertPhoto('https://picsum.photos/id/13/600/400', 'adam', 'true', 'yza,bcd');
-            insertPhoto('https://picsum.photos/id/16/600/400', 'admin', 'true', 'efg,hij');
-            insertPhoto('https://picsum.photos/id/19/600/400', 'adam', 'false', 'klm,nop');
-            insertPhoto('https://picsum.photos/id/22/600/400', 'adam', 'false', 'qrs,tuv');
+            // insertPhoto('https://picsum.photos/id/1/600/400', 'adam', 'false', 'abc,def');
+            // insertPhoto('https://picsum.photos/id/4/600/400', 'admin', 'false', 'ghi,jkl');
+            // insertPhoto('https://picsum.photos/id/7/600/400', 'goska', 'true', 'mno,pqr');
+            // insertPhoto('https://picsum.photos/id/10/600/400', 'goska', 'false', 'stu,vwx');
+            // insertPhoto('https://picsum.photos/id/13/600/400', 'adam', 'true', 'yza,bcd');
+            // insertPhoto('https://picsum.photos/id/16/600/400', 'admin', 'true', 'efg,hij');
+            // insertPhoto('https://picsum.photos/id/19/600/400', 'adam', 'false', 'klm,nop');
+            // insertPhoto('https://picsum.photos/id/22/600/400', 'adam', 'false', 'qrs,tuv');
         };
     });
 }
