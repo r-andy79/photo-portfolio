@@ -135,7 +135,18 @@ function renderLogoutLoginMenu() {
   }
 }
 
+<<<<<<< HEAD
 
+=======
+function slicePath(path) {
+  let index
+  index = path.lastIndexOf('/')
+  if(index === -1){
+    index = path.lastIndexOf('\\')
+  }
+  return path.slice(index).replace('/upload', '');
+}
+>>>>>>> b2c23dfd7c956cc0ccff2b08887a22c7df4884ac
 
 function deleteFormIfExists(selector) {
   const form = document.querySelector(selector);

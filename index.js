@@ -1,15 +1,15 @@
-const crypto = require('crypto');
-const express = require('express');
-const upload = require('express-fileupload');
-const path = require('path')
-const sqlite3 = require('sqlite3').verbose();
-const cookieParser = require('cookie-parser');
+import { randomUUID } from 'crypto';
+import express, { static as ss, json } from 'express';
+import upload from 'express-fileupload';
+import sqlite3 from 'sqlite3'
+import path from 'path'
+import cookieParser from 'cookie-parser';
 const app = express();
 const port = 3000;
 
-app.use(express.static('public'))
-app.use(express.static('upload'))
-app.use(express.json());
+app.use(ss('public'))
+app.use(ss('upload'))
+app.use(json());
 app.use(cookieParser());
 app.use(upload());
 app.set('view engine', 'ejs');
@@ -115,6 +115,7 @@ function getAllPhotos(user) {
 
 function insertFile(file) {
   let uploadPath;
+  const __dirname = path.resolve(path.dirname(''));
   uploadPath = __dirname + '/upload/' + file.name;
   return new Promise((resolve, reject) => {
     file.mv(uploadPath, err => {
@@ -166,7 +167,7 @@ app.post('/login', (req, res) => {
       console.error('BAD PASSWORD')
       return res.status(401).json({ "message": "Invalid credentials" })
     }
-    const sessionId = crypto.randomUUID();
+    const sessionId = randomUUID();
     // I made insertSession thenable, so I only respond with cookie once I finished inserting session
     return insertSession(sessionId, userId).then(() => {
       res.cookie('session_id', sessionId, { maxAge: 10 * 60 * 1000 }); // poczytać
