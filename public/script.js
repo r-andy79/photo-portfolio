@@ -1,3 +1,5 @@
+import { slicePath } from "./functions";
+
 const formEl = document.querySelector('form');
 const photosEl = document.querySelector('#photos');
 const messageEl = document.querySelector('#message')
@@ -133,10 +135,7 @@ function renderLogoutLoginMenu() {
   }
 }
 
-function slicePath(path) {
-  const index = path.indexOf('/')
-  return path.slice(index).replace('/upload', '');
-}
+
 
 function deleteFormIfExists(selector) {
   const form = document.querySelector(selector);
@@ -145,6 +144,7 @@ function deleteFormIfExists(selector) {
 
 function displayPhotos(photos) {
   photos.forEach(photo => {
+    console.log(photo.name)
     const path = slicePath(photo.name);
     console.log(path);
     photosEl.innerHTML += `<div><img src=${path} alt="">author: ${photo.author}, private: ${photo.private}</div>`
@@ -255,7 +255,6 @@ function renderRoute(path) {
   } 
   fn(path)
 }
-
 
 
 function pushToHistory(path) {
