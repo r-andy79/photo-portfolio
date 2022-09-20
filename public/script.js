@@ -1,6 +1,6 @@
-import { slicePath } from "./functions";
+// import { slicePath } from "./functions";
 
-const formEl = document.querySelector('form');
+// const formEl = document.querySelector('form');
 const photosEl = document.querySelector('#photos');
 const messageEl = document.querySelector('#message')
 const linksEl = Array.from(document.querySelectorAll('nav a'));
@@ -81,23 +81,32 @@ function createPhotoUploadForm() {
   photoUploadForm.id = 'upload-photos';
   const fileInputEl = document.createElement('input');
   const labelInputEl = document.createElement('label');
+  const labelInputAuthorEl = document.createElement('label');
   const inputEl = document.createElement('input');
+  const inputAuthorEl = document.createElement('input');
   const labelCheckboxEl = document.createElement('label');
   const checkboxEl = document.createElement('input');
   const submitEl = document.createElement('input');
-  fileInputEl.setAttribute('type', 'file')
-  fileInputEl.setAttribute('name', 'sampleFile')
-  labelInputEl.textContent = 'Please input tags to describe the photo'
-  labelCheckboxEl.textContent = 'Tick checkbox if photo is private'
+  fileInputEl.setAttribute('type', 'file');
+  fileInputEl.setAttribute('name', 'sampleFile');
+  labelInputEl.textContent = 'Please input folder name';
+  labelInputAuthorEl.textContent = 'Please input author name';
+  labelCheckboxEl.textContent = 'Tick checkbox if photo is private';
   inputEl.setAttribute('type', 'text');
+  inputEl.setAttribute('name', 'folder');
+  inputAuthorEl.setAttribute('type', 'text');
+  inputAuthorEl.setAttribute('name', 'author');
   checkboxEl.setAttribute('type', 'checkbox');
   checkboxEl.setAttribute('name', 'isPrivate');
   submitEl.setAttribute('type', 'submit')
   submitEl.setAttribute('value', 'upload photo')
   labelInputEl.appendChild(inputEl);
+  labelInputAuthorEl.appendChild(inputAuthorEl);
+  labelInputAuthorEl.appendChild(inputAuthorEl);
   labelCheckboxEl.appendChild(checkboxEl);
   photoUploadForm.appendChild(fileInputEl);
   photoUploadForm.appendChild(labelCheckboxEl);
+  photoUploadForm.appendChild(labelInputAuthorEl);
   photoUploadForm.appendChild(labelInputEl);
   photoUploadForm.appendChild(submitEl);
   document.body.insertBefore(photoUploadForm, photosEl);
@@ -107,20 +116,21 @@ function createPhotoUploadForm() {
     console.log(e.target);
     const fileEl = e.target.firstChild.files[0];
     const isPrivate = e.target[1].checked;
-    const meta = e.target[2].value;
+    const author = e.target[2].value;
+    const meta = e.target[3].value;
     
     const formData = new FormData()
     formData.append('sampleFile', fileEl)
     formData.append('isPrivate', isPrivate)
+    formData.append('author', author)
     formData.append('metaData', meta)
 
     const data = {
       method: 'POST',
       body: formData
     }
-    return fetch('/insert', data)
-    // insertData(data)
-    // .then(response => console.log(response))
+    insertData(data)
+    .then(response => console.log(response))
   })
 }
 
@@ -135,18 +145,10 @@ function renderLogoutLoginMenu() {
   }
 }
 
-<<<<<<< HEAD
-
-=======
 function slicePath(path) {
-  let index
-  index = path.lastIndexOf('/')
-  if(index === -1){
-    index = path.lastIndexOf('\\')
-  }
+  const index = path.indexOf('/')
   return path.slice(index).replace('/upload', '');
 }
->>>>>>> b2c23dfd7c956cc0ccff2b08887a22c7df4884ac
 
 function deleteFormIfExists(selector) {
   const form = document.querySelector(selector);

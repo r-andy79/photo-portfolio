@@ -23,7 +23,6 @@
       "public/*"
     ]
   },
-<<<<<<< HEAD
   "jest": {
     "transform": {
       "^.+\\.[t|j]sx?$": "babel-jest"
@@ -38,7 +37,6 @@
     "@types/jest": "^29.0.1",
     "babel-jest": "^28.0.3",
     "jest": "^27.5.1"
-  }
-=======
->>>>>>> b2c23dfd7c956cc0ccff2b08887a22c7df4884ac
+  },
+  "type": "module"
 }

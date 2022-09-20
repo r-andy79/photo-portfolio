@@ -146,11 +146,12 @@ app.get('/', (_, res) => {
 
 app.post('/insert', (req, res) => {
   console.log('/insert', req.body)
+  const author = req.body?.author;
   const fileEl = req.files?.sampleFile;
   const isPrivate = req.body?.isPrivate;
   const metaData = req.body?.metaData;
-  console.log({fileEl, isPrivate, metaData});
-  return insertFile(fileEl).then(fileLocation => insertPhoto(fileLocation, 'admin', isPrivate, metaData)).then(() => res.status(200).json({ "message": "ok" }))
+  console.log({author, fileEl, isPrivate, metaData});
+  return insertFile(fileEl).then(fileLocation => insertPhoto(fileLocation, author, isPrivate, metaData)).then(() => res.status(200).json({ "message": "ok" }))
 })
 
 
