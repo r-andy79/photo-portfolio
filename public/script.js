@@ -1,4 +1,5 @@
-// import { slicePath } from "./functions";
+import { slicePath } from "./functions.js";
+
 
 // const formEl = document.querySelector('form');
 const photosEl = document.querySelector('#photos');
@@ -145,10 +146,6 @@ function renderLogoutLoginMenu() {
   }
 }
 
-function slicePath(path) {
-  const index = path.indexOf('/')
-  return path.slice(index).replace('/upload', '');
-}
 
 function deleteFormIfExists(selector) {
   const form = document.querySelector(selector);
